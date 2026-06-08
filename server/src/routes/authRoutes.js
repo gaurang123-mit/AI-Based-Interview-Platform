@@ -6,8 +6,8 @@ const {
     registerUser,
     loginUser,
     forgotPassword,
-    verifyOtp,
-    resetPassword
+    resetPassword,
+    verifyOtp
 } = require("../controllers/authController");
 
 const upload = multer({
