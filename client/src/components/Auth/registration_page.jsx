@@ -49,7 +49,8 @@ function RegistrationPage({ onBackToLogin, onRegisterUser }) {
       setTimeout(() => {
         onRegisterUser({
           ...formData,
-          profilePhoto: formData.profilePhoto?.name || "",
+          phone: phoneDigits,
+          profilePhoto: response.data?.user?.profile_photo || "",
         });
       }, 800);
     } catch (error) {
