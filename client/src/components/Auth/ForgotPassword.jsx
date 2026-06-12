@@ -33,6 +33,8 @@ function ForgotPassword({ onBackToLogin, onOtpVerified }) {
     e.preventDefault();
     setLoading(true);
     setMessage("");
+    console.log("Email:", email);
+    console.log("OTP:", otp);
 
     try {
       const response = await api.post("/auth/verify-otp", {

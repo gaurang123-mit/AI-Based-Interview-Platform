@@ -16,7 +16,7 @@ const createMailTransporter = () => {
 
 const sendPasswordResetOtp = async (user, otp) => {
     if (process.env.EMAIL_DEBUG_OTP === "true") {
-        console.log(`Password reset OTP for ${user.email}: ${otp}`);
+       
         return;
     }
 
@@ -26,7 +26,7 @@ const sendPasswordResetOtp = async (user, otp) => {
         from: process.env.EMAIL_FROM || process.env.EMAIL_USER,
         to: user.email,
         subject: "Password reset OTP",
-        text: `Your password reset OTP is ${otp}. It will expire in 10 minutes.`
+        text: "Your password reset OTP is ${otp}. It will expire in 10 minutes."
     });
 };
 
@@ -189,12 +189,8 @@ const forgotPassword = async (req, res) => {
         }
 
         const otp = crypto.randomInt(100000, 1000000).toString();
-        const hashedOtp = crypto
-            .createHash("sha256")
-            .update(otp)
-            .digest("hex");
 
-        user.resetPasswordOtp = hashedOtp;
+        user.resetPasswordOtp = otp;
         user.resetPasswordOtpExpire = Date.now() + 10 * 60 * 1000;
 
         await user.save();
@@ -235,14 +231,10 @@ const verifyOtp = async (req, res) => {
 
         const normalizedEmail = email.toLowerCase().trim();
 
-        const hashedOtp = crypto
-            .createHash("sha256")
-            .update(otp)
-            .digest("hex");
 
         const user = await User.findOne({
             email: normalizedEmail,
-            resetPasswordOtp: hashedOtp,
+            resetPasswordOtp: otp,
             resetPasswordOtpExpire: {
                 $gt: Date.now()
             }
@@ -277,14 +269,10 @@ const resetPassword = async (req, res) => {
 
         const normalizedEmail = email.toLowerCase().trim();
 
-        const hashedOtp = crypto
-            .createHash("sha256")
-            .update(otp)
-            .digest("hex");
 
         const user = await User.findOne({
             email: normalizedEmail,
-            resetPasswordOtp: hashedOtp,
+            resetPasswordOtp: otp,
             resetPasswordOtpExpire: {
                 $gt: Date.now()
             }
