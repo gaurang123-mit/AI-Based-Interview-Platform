@@ -36,7 +36,7 @@ const RecruiterDashboard = () => {
 
     setDeleting(postId);
     try {
-      await api.delete(`/interviews/${postId}`, {
+      await api.delete(`/interview-posts/${postId}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
       setPosts((prev) => prev.filter((p) => p._id !== postId));
