@@ -9,6 +9,9 @@ const mammoth = require("mammoth");
 const Tesseract = require("tesseract.js");
 const ai = require("../config/gemini");
 const cloudinary = require("../config/cloudinary")
+const OpenAI  = require("openai")
+
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 const uploadResume = async (req, res) => {
 
@@ -116,16 +119,12 @@ const uploadResult =
   if (err) console.error(err);
 });
 
-const resume =
-  await Resume.create({
-
-    candidate: req.user.id,
-
+const resume = await Resume.create({ 
+    candidate: req.user.id, 
     resumeUrl: uploadResult.secure_url,
+     extractedText
+     });
 
-    extractedText
-
-  });
 
     // generating the response from the llm by providing the extracted content
         const prompt = `
@@ -178,17 +177,24 @@ Resume Text:
 ${extractedText}
 `;
 
-const response = await ai.models.generateContent({
-    model: "gemini-2.5-flash",
-    contents: prompt
-});
+// const response = await ai.models.generateContent({
+//     model: "gemini-2.5-flash",
+//     contents: prompt
+// });
+
+      const response = await openai.chat.completions.create({
+        model:    'gpt-4o',
+        messages: [{ role: 'user', content: prompt }],
+      });
+      console.log("AI response:",response)
+      let raw= response.choices[0].message.content;
 
 let profileData;
 
 try {
 
     let jsonText =
-        response.text
+        raw
         .replace(/```json/g, "")
         .replace(/```/g, "")
         .trim();
@@ -307,14 +313,14 @@ const saveProfile = async (req, res) => {
 const getProfile = async(req,res)=>{
 
     try{
-
+        const resume_url = await Resume.findOne({candidate:req.user.id}).select("resumeUrl");
         const user =
         await User.findById(req.user.id)
         .select("-password");
-
         res.status(200).json({
     success:true,
-    profile:user
+    profile:user,
+    url:resume_url
 });
 
     }catch(error){

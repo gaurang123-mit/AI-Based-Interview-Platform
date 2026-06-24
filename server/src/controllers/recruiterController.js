@@ -1,5 +1,7 @@
 const Result = require("../models/Result");
 const User  = require("../models/User")
+const InterviewPost = require("../models/Interview");
+const { deleteInterviewPost } = require("./interviewPostController");
 
 
 // controllers/userController.js
@@ -48,8 +50,26 @@ const getPerformance = async (req, res) => {
   }
 };
 
+const Deleteresults = async(req,res)=>{
+      
+      try{
+        const interviewid = await Result.findOne({_id: req.params.resultID}).select("interviewId")
+        const recruiterId = await InterviewPost.findOne({_id:interviewid.interviewId}).select("recruiterId")
+        console.log("the interview id: ", interviewid.interviewId)
+        console.log("the recruiter id: ",recruiterId.recruiterId)
+        if (recruiterId.recruiterId.toString() === req.user.id.toString()){
+          await Result.findOneAndDelete({_id:req.params.resultID})
+          res.status(200).json({
+            message:"the result has been deleted",
+          })
+        }
+      }catch(err){
+            res.status(500).json({message:"server error"})
+      }
+}
 
 module.exports = {
     getCandidates,
-    getPerformance
+    getPerformance,
+    Deleteresults
 };
