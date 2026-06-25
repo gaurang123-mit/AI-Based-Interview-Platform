@@ -19,7 +19,7 @@ export default function PerformancePage() {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log("data fetched from results :",res.data.results)
+      
       setResults(res.data.results || []);
     } catch (err) {
       console.error(err);
@@ -37,6 +37,21 @@ export default function PerformancePage() {
           ) / results.length
         )
       : 0;
+
+  const handleDeleteResult = async(resultID)=>{
+      try{
+          const res = await api.delete(`/recruiter/delete-result/${resultID}`,{
+            headers:{Authorization: `Bearer ${localStorage.getItem('token')}`}
+          })
+          if (res.status == 200){
+             setResults(prev =>
+    prev.filter(result => result._id !== resultID)
+  );
+          }
+        }catch(err){
+        console.log("error:",err)
+      }
+  }
 
   const hireCount = results.filter(
     (r) =>
@@ -180,6 +195,14 @@ export default function PerformancePage() {
                       className="bg-indigo-600 px-3 py-2 rounded-lg"
                     >
                       View
+                    </button>
+                    <button
+                      onClick={() =>
+                        handleDeleteResult(item._id)
+                      }
+                      className="bg-red-600 px-3 py-2 rounded-lg"
+                    >
+                      Delete
                     </button>
 
                   </td>

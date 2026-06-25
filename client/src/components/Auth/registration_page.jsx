@@ -10,7 +10,6 @@ function RegistrationPage({ onBackToLogin, onRegisterUser }) {
     password: "",
     role: "candidate",
     phone:"",
-    profilePhoto: null,
   });
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
@@ -37,7 +36,6 @@ function RegistrationPage({ onBackToLogin, onRegisterUser }) {
       password: formData.password,
       role: formData.role,
       ph_no: phoneNumber,
-      profile_photo: formData.profilePhoto?.name || "",
     };
 
     try {
@@ -50,7 +48,6 @@ function RegistrationPage({ onBackToLogin, onRegisterUser }) {
         onRegisterUser({
           ...formData,
           phone: phoneDigits,
-          profilePhoto: response.data?.user?.profile_photo || "",
         });
       }, 800);
     } catch (error) {
@@ -116,6 +113,7 @@ function RegistrationPage({ onBackToLogin, onRegisterUser }) {
       }))
     }
   />
+  
 </div>
 
       
@@ -132,21 +130,6 @@ function RegistrationPage({ onBackToLogin, onRegisterUser }) {
               <option value="admin">Admin</option>
             </select>
           </div>
-
-          <label className="file-upload">
-            <span>Upload Profile Photo</span>
-            <input
-              type="file"
-              name="profilePhoto"
-              accept="image/*"
-              onChange={handleChange}
-              required
-            />
-          </label>
-
-          {formData.profilePhoto && (
-            <p className="selected-file">{formData.profilePhoto.name}</p>
-          )}
 
           {message && <p className="form-message">{message}</p>}
 
