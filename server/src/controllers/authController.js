@@ -135,11 +135,6 @@ const loginUser = async (req, res) => {
     try {
         const { email, password } = req.body;
 
-        console.log("Received Email:", email);
-        console.log("ADMIN_EMAIL:", process.env.ADMIN_EMAIL);
-        console.log("Received Password:", password);
-        console.log("Password Match:", password === process.env.ADMIN_PASSWORD);
-
         if (
             email === process.env.ADMIN_EMAIL &&
             password === process.env.ADMIN_PASSWORD
