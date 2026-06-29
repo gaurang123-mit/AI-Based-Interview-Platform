@@ -53,8 +53,6 @@ const Deleteresults = async(req,res)=>{
       try{
         const interviewid = await Result.findOne({_id: req.params.resultID}).select("interviewId")
         const recruiterId = await InterviewPost.findOne({_id:interviewid.interviewId}).select("recruiterId")
-        console.log("the interview id: ", interviewid.interviewId)
-        console.log("the recruiter id: ",recruiterId.recruiterId)
         if (recruiterId.recruiterId.toString() === req.user.id.toString()){
           await Result.findOneAndDelete({_id:req.params.resultID})
           res.status(200).json({

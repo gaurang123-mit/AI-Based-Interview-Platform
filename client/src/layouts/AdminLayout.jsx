@@ -16,7 +16,6 @@ import { useState } from "react";
 import AdminDashboard from "../components/dashboard/admin/AIUsageAnalytics";
 import CandidatesTable from "../components/dashboard/admin/CandidatesTable";
 import RecruitersTable from "../components/dashboard/admin/RecruitersTable";
-import ChangeAdminPassword from "../components/dashboard/admin/ChangeAdminPassword";
 
 const AdminLayout = ({ user, onLogout }) => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -35,10 +34,6 @@ const AdminLayout = ({ user, onLogout }) => {
       name: "Recruiters",
       icon: Building2,
     },
-    {
-      name: "Change Password",
-      icon: KeyRound,
-    },
   ];
 
   const renderPage = () => {
@@ -51,9 +46,6 @@ const AdminLayout = ({ user, onLogout }) => {
 
       case "Recruiters":
         return <RecruitersTable />;
-
-      case "Change Password":
-        return <ChangeAdminPassword />;
 
       default:
         return (
@@ -104,7 +96,7 @@ const AdminLayout = ({ user, onLogout }) => {
             onClick={() => setIsProfileOpen(!isProfileOpen)}
             className="flex items-center gap-2 bg-slate-800/40 hover:bg-slate-800/80 border border-slate-700/50 rounded-full pl-1 pr-3 py-1"
           >
-            <div className="w-8 h-8 rounded-full overflow-hidden border border-slate-500">
+            {/* <div className="w-8 h-8 rounded-full overflow-hidden border border-slate-500">
               <img
                 src={
                   user?.profile_photo ||
@@ -113,7 +105,7 @@ const AdminLayout = ({ user, onLogout }) => {
                 alt="Profile"
                 className="w-full h-full object-cover"
               />
-            </div>
+            </div> */}
 
             <span className="hidden sm:block max-w-28 truncate text-xs font-medium text-white">
               {user?.name || "Admin"}
@@ -128,7 +120,7 @@ const AdminLayout = ({ user, onLogout }) => {
 
           {isProfileOpen && (
             <div className="absolute right-0 mt-2 w-56 rounded-xl bg-[#11192e] border border-slate-800 shadow-xl py-2 z-50">
-              <button
+              {/* <button
                 onClick={() => {
                   setActiveItem("Change Password");
                   setIsProfileOpen(false);
@@ -137,7 +129,7 @@ const AdminLayout = ({ user, onLogout }) => {
               >
                 <User className="w-4 h-4" />
                 Change Password
-              </button>
+              </button> */}
 
               <hr className="border-slate-800 my-2" />
 

@@ -42,8 +42,13 @@ export default function PerformancePage() {
       try{
           const res = await api.delete(`/recruiter/delete-result/${resultID}`,{
             headers:{Authorization: `Bearer ${localStorage.getItem('token')}`}
-      })
-      }catch(err){
+          })
+          if (res.status == 200){
+             setResults(prev =>
+    prev.filter(result => result._id !== resultID)
+  );
+          }
+        }catch(err){
         console.log("error:",err)
       }
   }
