@@ -20,9 +20,6 @@ function Login({ onForgotPasswordClick, onLoginSuccess, onRegisterClick }) {
         password,
       });
 
-      // if (response.data?.token) {
-      //   localStorage.setItem("token", response.data.token);
-      // }
 
   
       setMessage(response.data?.message || "Login successful.");

@@ -54,7 +54,6 @@ const authMiddleware = (req, res, next) => {
                     ? req.headers.authorization.split(" ")[1]
                     : null
             );
-
         if (!token) {
             return res.status(401).json({
                 success: false,

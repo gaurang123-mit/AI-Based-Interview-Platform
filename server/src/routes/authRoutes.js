@@ -25,7 +25,7 @@ const upload = multer({
     }
 });
 
-router.post("/register", upload.single("profilePhoto"), registerUser);
+router.post("/register", registerUser);
 router.post("/login", loginUser);
 router.post("/logout", logoutUser);
 router.post("/forgot-password", forgotPassword);

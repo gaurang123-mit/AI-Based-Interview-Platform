@@ -4,7 +4,8 @@ const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 const nodemailer = require("nodemailer");
 const { generateTokenAndSetCookie } = require("../utils/generateToken");
-
+// const { Admin } = require("openai/resources/index.js");
+const Admin = require("../models/Admin")
 
 const createMailTransporter = () => {
     return nodemailer.createTransport({
@@ -59,7 +60,6 @@ const formatUserResponse = (user) => {
         email: user.email,
         role: user.role,
         ph_no: user.ph_no,
-        profile_photo: getProfilePhotoDataUri(user)
     };
 };
 
@@ -71,7 +71,7 @@ const registerUser = async (req, res) => {
         const { name, email, ph_no, password } = req.body;
        
        
-        if (!name || !email || !ph_no || !password || !role) {
+        if (!name || !email || !ph_no || !password ) {
             return res.status(400).json({
                 message: "Name, email, phone number and password are required"
             });
@@ -79,12 +79,16 @@ const registerUser = async (req, res) => {
 
         const normalizedEmail = email.toLowerCase().trim();
 
-        const existingUser = await User.findOne({
+        const candidate = await User.findOne({
             $or: [
                 { email: normalizedEmail },
                 { ph_no: ph_no.trim() }
             ]
-        });
+        }) 
+        const recruiter  = await Admin.findOne({email:normalizedEmail})
+        const admin =  process.env.ADMIN_EMAIL == normalizedEmail? true : false
+
+        const existingUser = candidate || recruiter || admin;
 
         if (existingUser) {
             return res.status(400).json({
@@ -92,11 +96,6 @@ const registerUser = async (req, res) => {
             });
         }
 
-        //   if (role === "admin") {
-        //         return res.status(403).json({
-        //             message: "Admin registration is not allowed"
-        //         });
-        //     }
 
 
         const hashedPassword =
@@ -134,21 +133,13 @@ const loginUser = async (req, res) => {
             email === process.env.ADMIN_EMAIL &&
             password === process.env.ADMIN_PASSWORD
         ) {
-            // const adminToken = jwt.sign(
-            //     {
-            //         id: "admin",
-            //         role: "admin"
-            //     },
-            //     process.env.JWT_SECRET,
-            //     { expiresIn: "7d" }
-            // );
+
 generateTokenAndSetCookie({
         id: "admin",
         role: "admin"
     },res);
             return res.status(200).json({
                 message: "Admin logged in successfully",
-                // token: adminToken,
                 user: {
                     id: "admin",
                     name: "Administrator",
@@ -157,9 +148,20 @@ generateTokenAndSetCookie({
                 }
             });
         }
-
+        
         // Existing login code continues here
         const normalizedEmail = email.toLowerCase().trim();
+        const recruiter = await Admin.findOne({email: normalizedEmail})
+
+        if(recruiter){
+            if(password == process.env.RECRUITER_PASSWORD){
+                generateTokenAndSetCookie(recruiter,res);
+        res.status(200).json({
+            message: "Recruiter logged in successfully",
+            user: formatUserResponse(recruiter)
+        });
+            }
+        }
 
         const user = await User.findOne({
             email: normalizedEmail
@@ -181,7 +183,6 @@ generateTokenAndSetCookie({
 generateTokenAndSetCookie(user,res);
         res.status(200).json({
             message: "User logged in successfully",
-            // token: createToken(user),
             user: formatUserResponse(user)
         });
 

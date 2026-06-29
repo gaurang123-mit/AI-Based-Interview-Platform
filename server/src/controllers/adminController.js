@@ -39,7 +39,7 @@ const addRecruiter = async(req,res) =>{
 
     const recruiter  = await Admin.create({
       name,
-      email
+      email,
     })
 
     return res.status(200).json({
