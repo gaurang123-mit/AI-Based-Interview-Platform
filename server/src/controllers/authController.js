@@ -4,7 +4,6 @@ const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 const nodemailer = require("nodemailer");
 const { generateTokenAndSetCookie } = require("../utils/generateToken");
-// const { Admin } = require("openai/resources/index.js");
 const Admin = require("../models/Admin")
 
 const createMailTransporter = () => {
@@ -32,16 +31,6 @@ const sendPasswordResetOtp = async (user, otp) => {
     });
 };
 
-// const createToken = (user) => {
-//     return jwt.sign(
-//         {
-//             id: user._id,
-//             role: user.role
-//         },
-//         process.env.JWT_SECRET,
-//         { expiresIn: "7d" }
-//     );
-// };
 
 const getProfilePhotoDataUri = (user) => {
     if (!user.profile_photo?.data || !user.profile_photo?.contentType) {
@@ -69,9 +58,9 @@ const registerUser = async (req, res) => {
     try {
 
         const { name, email, ph_no, password } = req.body;
-       
-       
-        if (!name || !email || !ph_no || !password ) {
+
+
+        if (!name || !email || !ph_no || !password) {
             return res.status(400).json({
                 message: "Name, email, phone number and password are required"
             });
@@ -84,9 +73,9 @@ const registerUser = async (req, res) => {
                 { email: normalizedEmail },
                 { ph_no: ph_no.trim() }
             ]
-        }) 
-        const recruiter  = await Admin.findOne({email:normalizedEmail})
-        const admin =  process.env.ADMIN_EMAIL == normalizedEmail? true : false
+        })
+        const recruiter = await Admin.findOne({ email: normalizedEmail })
+        const admin = process.env.ADMIN_EMAIL == normalizedEmail ? true : false
 
         const existingUser = candidate || recruiter || admin;
 
@@ -108,10 +97,9 @@ const registerUser = async (req, res) => {
             password: hashedPassword,
             role: "candidate",
         });
-generateTokenAndSetCookie(user,res);
+        generateTokenAndSetCookie(user, res);
         res.status(201).json({
             message: "User registered successfully",
-            // token: createToken(user),
             user: formatUserResponse(user)
         });
 
@@ -134,10 +122,10 @@ const loginUser = async (req, res) => {
             password === process.env.ADMIN_PASSWORD
         ) {
 
-generateTokenAndSetCookie({
-        id: "admin",
-        role: "admin"
-    },res);
+            generateTokenAndSetCookie({
+                id: "admin",
+                role: "admin"
+            }, res);
             return res.status(200).json({
                 message: "Admin logged in successfully",
                 user: {
@@ -148,19 +136,24 @@ generateTokenAndSetCookie({
                 }
             });
         }
-        
-        // Existing login code continues here
-        const normalizedEmail = email.toLowerCase().trim();
-        const recruiter = await Admin.findOne({email: normalizedEmail})
 
-        if(recruiter){
-            if(password == process.env.RECRUITER_PASSWORD){
-                generateTokenAndSetCookie(recruiter,res);
-        res.status(200).json({
-            message: "Recruiter logged in successfully",
-            user: formatUserResponse(recruiter)
-        });
+        const normalizedEmail = email.toLowerCase().trim();
+        const recruiter = await Admin.findOne({ email: normalizedEmail })
+
+        if (recruiter) {
+            const isRecPass = await bcrypt.compare(password, recruiter.password);
+            if (!isRecPass) {
+                return res.status(401).json({
+                    message: "Invalid password"
+                });
             }
+
+            generateTokenAndSetCookie(recruiter, res);
+            res.status(200).json({
+                message: "Recruiter logged in successfully",
+                user: formatUserResponse(recruiter)
+            });
+
         }
 
         const user = await User.findOne({
@@ -180,7 +173,7 @@ generateTokenAndSetCookie({
                 message: "Invalid email or password"
             });
         }
-generateTokenAndSetCookie(user,res);
+        generateTokenAndSetCookie(user, res);
         res.status(200).json({
             message: "User logged in successfully",
             user: formatUserResponse(user)
@@ -279,6 +272,8 @@ const verifyOtp = async (req, res) => {
     }
 };
 
+
+
 const resetPassword = async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -329,17 +324,17 @@ const resetPassword = async (req, res) => {
 };
 
 const logoutUser = (req, res) => {
-    try{
+    try {
         res.cookie("jwt", "", {
-        maxAge: 0
-    });
+            maxAge: 0
+        });
 
-    res.status(200).json({
-        message: "Logged out successfully"
-    });
+        res.status(200).json({
+            message: "Logged out successfully"
+        });
 
-    }catch(error){
-       throw new Error("Failed to LogOut");
+    } catch (error) {
+        throw new Error("Failed to LogOut");
     }
 };
 

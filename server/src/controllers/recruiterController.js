@@ -2,6 +2,7 @@ const Result = require("../models/Result");
 const User  = require("../models/User")
 const InterviewPost = require("../models/Interview");
 const { deleteInterviewPost } = require("./interviewPostController");
+const Admin = require("../models/Admin");
 
 
 // controllers/userController.js
@@ -64,8 +65,28 @@ const Deleteresults = async(req,res)=>{
       }
 }
 
+
+const setpassword = async(req,res)=>{
+  const { password } = req.body;
+  try{
+
+    const hashedPassword = await bcrypt.hash(password,10)
+    await Admin.findByIdAndUpdate(req.user.id,{
+      password :hashedPassword
+    })
+
+    return res.status(200).json({message:"the password set successfully"})
+  }
+  catch(err){
+
+  }
+
+
+}
+
 module.exports = {
     getCandidates,
     getPerformance,
-    Deleteresults
+    Deleteresults,
+    setpassword
 };

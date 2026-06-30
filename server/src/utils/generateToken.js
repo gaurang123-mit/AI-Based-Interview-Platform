@@ -2,7 +2,6 @@ const jwt = require("jsonwebtoken");
 
 
 const generateTokenAndSetCookie = (user, res) => {
-    console.log('Setting JWT cookie')
   try {
     const token = jwt.sign({
         id: user._id || user.id,

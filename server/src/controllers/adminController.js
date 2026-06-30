@@ -36,10 +36,11 @@ const addRecruiter = async(req,res) =>{
         message:"the user with this email is already registered"
       })
     }
-
+    hashedEnvPassword = await bcrypt.hash(process.env.RECRUITER_PASSWORD,10)
     const recruiter  = await Admin.create({
       name,
       email,
+      password:hashedEnvPassword
     })
 
     return res.status(200).json({
