@@ -1,7 +1,7 @@
 const AIUsage = require("../models/AIUsage");
 const User = require("../models/User");
 const Admin = require("../models/Admin")
-
+const bcrypt = require("bcryptjs")
 const getCandidates = async (req, res) => {
   try {
     const candidates = await User.find({ role: "candidate" })
@@ -62,9 +62,8 @@ const deleteRecruiter = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const recruiter = await User.find({
+    const recruiter = await Admin.findOneAndDelete({
       _id: id,
-      role: "recruiter",
     });
 
     if (!recruiter) {
@@ -99,15 +98,22 @@ const deleteCandidate = async (req, res) => {
 
 const getAIAnalytics = async (req, res) => {
   try {
-    const analytics = await AIUsage.findOne();
+    let analytics = await AIUsage.findOne({});
+    let a  = 1;
+    if(!analytics){
+     analytics =  await AIUsage.create({});
+     a =2;
+
+    }
 
     const COST_PER_1M_TOKENS = 6.25; // Approx GPT-4o average cost
-
-  const estimatedCost =
-  (analytics.totalTokens / 1_000_000) * COST_PER_1M_TOKENS;
+    // console.log("analytics:",analytics)
+    // console.log("a:",a)
+  const estimatedCost = (analytics.totalTokens / 1_000_000) * COST_PER_1M_TOKENS;
+  // console.log("cost:",estimatedCost)
 
     if (!analytics) {
-      return res.status(200).json({
+      return res.status(404).json({
         totalRequests: 0,
         totalInterviews: 0,
         resumeTokens: 0,

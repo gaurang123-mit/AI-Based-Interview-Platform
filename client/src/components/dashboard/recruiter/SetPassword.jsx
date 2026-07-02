@@ -1,7 +1,8 @@
 import { useState } from "react";
-import api, { getErrorMessage } from "../../api/axiosClient";
+import api from "../../../api/axiosClient";
+import RecruiterLayout from "../../../layouts/RecruiterLayout"
 
-function SetPassword({ email, otp, onBackToLogin, onPasswordReset }) {
+function SetPassword({onPasswordChanged}) {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [message, setMessage] = useState("");
@@ -19,24 +20,19 @@ function SetPassword({ email, otp, onBackToLogin, onPasswordReset }) {
     setLoading(true);
 
     try {
-      const response = await api.post("/auth/reset-password", {
-        email,
-        otp,
-        password: newPassword,
-        confirmPassword,
+      const response = await api.post("/recruiter/set-password", {
+             password:newPassword,
       });
 
-      onPasswordReset(email, newPassword);
+      if(response.status == 200){
+         onPasswordChanged();
+      }
+
       setMessage(response.data?.message || "Password updated. Redirecting to login...");
       console.log("Reset password response:", response.data);
 
-      setTimeout(() => {
-        onBackToLogin();
-      }, 1200);
     } catch (error) {
-      setMessage(
-        getErrorMessage(error, "Unable to reset password. Please try again.")
-      );
+       console.log(error)
     } finally {
       setLoading(false);
     }
@@ -47,7 +43,7 @@ function SetPassword({ email, otp, onBackToLogin, onPasswordReset }) {
       <div className="login-card reset-card">
         <div className="profile-icon">RP</div>
 
-        <h2>Reset Password</h2>
+        <h2>set Password</h2>
 
         <form onSubmit={handleSubmit}>
           <div className="input-group">
@@ -73,13 +69,10 @@ function SetPassword({ email, otp, onBackToLogin, onPasswordReset }) {
           {message && <p className="form-message">{message}</p>}
 
           <button type="submit" className="login-btn">
-            {loading ? "RESETTING..." : "RESET PASSWORD"}
+            {loading ? "SETTING..." : "SET PASSWORD"}
           </button>
         </form>
 
-        <button type="button" className="register-text" onClick={onBackToLogin}>
-          Back to Login
-        </button>
       </div>
     </div>
   );

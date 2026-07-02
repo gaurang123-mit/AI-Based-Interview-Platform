@@ -8,10 +8,13 @@ import ResetPassword from "./components/Auth/ResetPassword";
 import AdminDashboard from "./layouts/AdminLayout";
 import CandidateLayout from "./layouts/CandidateLayout";
 import MyProfile from "./components/dashboard/candidate/MyProfile";
-import RecruiterLayout from "./layouts/RecruiterLayout";
+
 import CandidateDashboard from "./components/dashboard/candidate/InterviewDashboard";
-import InstructionPage from "./components/dashboard/candidate/Instruction";  // ← add
+import InstructionPage from "./components/dashboard/candidate/Instruction"; 
 import api from "./api/axiosClient";
+import SetPassword from "./components/dashboard/recruiter/SetPassword";
+import RecruiterLayout from "./layouts/RecruiterLayout";
+import RecruiterDashboard from "./components/dashboard/recruiter/Rec_InterviewDashboard";
 
 const STORAGE_KEY = "registeredUsers";
 const AUTH_USER_KEY = "authUser";
@@ -33,7 +36,7 @@ function App() {
   });
   const [resetEmail, setResetEmail] = useState("");
   const [resetOtp, setResetOtp] = useState("");
-  const [selectedPost, setSelectedPost] = useState(null);  // ← add
+  const [selectedPost, setSelectedPost] = useState(null); 
 
   const saveUsers = (users) => {
     setRegisteredUsers(users);
@@ -71,15 +74,28 @@ function App() {
     setPage("reset-password");
   };
 
-  const handleLoginSuccess = (user) => {
+const handleLoginSuccess = (user, mustChangePassword = false) => {
+
     setCurrentUser(user);
     localStorage.setItem(AUTH_USER_KEY, JSON.stringify(user));
-    const role = user?.role?.toLowerCase();
-    if (role === "candidate")      setPage("candidate-portal");
-    else if (role === "recruiter") setPage("recruiter-portal");
-    else if (role === "admin")     setPage("admin-portal");
-    else                           setPage("login");
-  };
+
+    if (user.role === "recruiter") {
+
+        if (mustChangePassword) {
+            setPage("set-password");
+        } else {
+            setPage("recruiter-portal");
+        }
+
+        return;
+    }
+
+    if (user.role === "candidate")
+        setPage("candidate-portal");
+
+    if (user.role === "admin")
+        setPage("admin-portal");
+};
 
 
 const handleLogout = async () => {
@@ -97,16 +113,24 @@ const handleLogout = async () => {
 };
  
 
-  if (page === "recruiter-portal") {
-    return (
-      <RecruiterLayout
-        user={currentUser}
-        onLogout={handleLogout}
-      >
-        <div className="text-white text-2xl">Recruiter Dashboard</div>
-      </RecruiterLayout>
-    );
-  }
+  if (page === "set-password") {
+  return (
+    <SetPassword
+      onPasswordChanged={() => setPage("recruiter-portal")}
+    />
+  );
+}
+
+if (page === "recruiter-portal") {
+  return (
+    <RecruiterLayout
+      user={currentUser}
+      onLogout={handleLogout}
+    >
+      <RecruiterDashboard />
+    </RecruiterLayout>
+  );
+}
 
   if (page === "admin-portal") {
   return (

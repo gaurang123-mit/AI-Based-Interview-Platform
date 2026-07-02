@@ -32,16 +32,6 @@ const sendPasswordResetOtp = async (user, otp) => {
 };
 
 
-const getProfilePhotoDataUri = (user) => {
-    if (!user.profile_photo?.data || !user.profile_photo?.contentType) {
-        return "";
-    }
-
-    const base64Image = Buffer.from(user.profile_photo.data).toString("base64");
-
-    return `data:${user.profile_photo.contentType};base64,${base64Image}`;
-};
-
 const formatUserResponse = (user) => {
     return {
         id: user._id,
@@ -60,7 +50,7 @@ const registerUser = async (req, res) => {
         const { name, email, ph_no, password } = req.body;
 
 
-        if (!name || !email || !ph_no || !password) {
+        if (!name || !email || !password) {
             return res.status(400).json({
                 message: "Name, email, phone number and password are required"
             });
@@ -68,16 +58,17 @@ const registerUser = async (req, res) => {
 
         const normalizedEmail = email.toLowerCase().trim();
 
+        const admin = process.env.ADMIN_EMAIL == normalizedEmail ? true : false
+        const recruiter = await Admin.findOne({ email: normalizedEmail })
+
         const candidate = await User.findOne({
             $or: [
                 { email: normalizedEmail },
                 { ph_no: ph_no.trim() }
             ]
         })
-        const recruiter = await Admin.findOne({ email: normalizedEmail })
-        const admin = process.env.ADMIN_EMAIL == normalizedEmail ? true : false
 
-        const existingUser = candidate || recruiter || admin;
+        const existingUser = admin || recruiter || candidate;
 
         if (existingUser) {
             return res.status(400).json({
@@ -100,7 +91,8 @@ const registerUser = async (req, res) => {
         generateTokenAndSetCookie(user, res);
         res.status(201).json({
             message: "User registered successfully",
-            user: formatUserResponse(user)
+            user: formatUserResponse(user),
+            mustChangePassword: true
         });
 
     } catch (error) {
@@ -139,7 +131,6 @@ const loginUser = async (req, res) => {
 
         const normalizedEmail = email.toLowerCase().trim();
         const recruiter = await Admin.findOne({ email: normalizedEmail })
-
         if (recruiter) {
             const isRecPass = await bcrypt.compare(password, recruiter.password);
             if (!isRecPass) {
@@ -151,7 +142,9 @@ const loginUser = async (req, res) => {
             generateTokenAndSetCookie(recruiter, res);
             res.status(200).json({
                 message: "Recruiter logged in successfully",
-                user: formatUserResponse(recruiter)
+                user:formatUserResponse(recruiter),
+                mustChangePassword: !recruiter.passwordChanged
+
             });
 
         }

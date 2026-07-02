@@ -24,7 +24,11 @@ function Login({ onForgotPasswordClick, onLoginSuccess, onRegisterClick }) {
   
       setMessage(response.data?.message || "Login successful.");
       console.log("Login response:", response.data);
-      onLoginSuccess(response.data?.user);
+      if (response.data.mustChangePassword) {
+    onLoginSuccess(response.data.user, true);
+} else {
+    onLoginSuccess(response.data.user, false);
+}
     } catch (error) {
       setMessage(getErrorMessage(error, "Login failed. Please try again."));
     } finally {
@@ -65,10 +69,6 @@ function Login({ onForgotPasswordClick, onLoginSuccess, onRegisterClick }) {
           </div>
 
           <div className="options">
-            <label>
-              <input type="checkbox" />
-              Remember Me
-            </label>
 
             <button
               type="button"
