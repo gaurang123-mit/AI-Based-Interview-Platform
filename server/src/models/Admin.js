@@ -23,7 +23,8 @@ const AdminSchema = new mongoose.Schema({
     },
 
     passwordChanged:{
-        type: Boolean
+        type: Boolean,
+        default:false
     }
 })
 
