@@ -117,8 +117,9 @@ function AppRoutes() {
           <PublicOnly>
             <AuthShell>
               <ForgotPassword
-                initialEmail={forgotEmail}
+                userEmail={forgotEmail}
                 onOtpVerified={handleOtpVerified}
+                onBackToLogin={() => navigate("/login")}
               />
             </AuthShell>
           </PublicOnly>
@@ -144,7 +145,9 @@ function AppRoutes() {
         path="/set-password"
         element={
           <PrivateOnly>
+            <AuthShell>
             <SetPassword onPasswordChanged={()=> navigate("/dashboard")} />
+            </AuthShell>
           </PrivateOnly>
         }
       />

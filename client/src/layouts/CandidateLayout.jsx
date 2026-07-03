@@ -74,25 +74,13 @@ const CandidateLayout = ({ onLogout, user }) => {
           <span className="font-semibold text-base sm:text-lg text-slate-200">Candidate Portal</span>
         </div>
 
-        <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-slate-400">
-          <a href="#dashboard" className="hover:text-slate-200 transition-colors">Dashboard</a>
-          <button className="relative p-2 rounded-lg hover:bg-slate-800/40">
-            <Bell className="w-5 h-5" />
-            <span className="absolute top-1 right-1 w-2 h-2 bg-indigo-500 rounded-full"></span>
-          </button>
-        </nav>
 
         <div className="relative">
           <button
             onClick={() => setIsProfileOpen(!isProfileOpen)}
             className="flex items-center gap-2 bg-slate-800/40 hover:bg-slate-800/80 border border-slate-700/50 rounded-full pl-1 pr-3 py-1"
           >
-            <div className="w-8 h-8 rounded-full overflow-hidden border border-slate-500">
-              <img
-                src={user?.profile_photo || "https://via.placeholder.com/150"}
-                alt="Profile"
-                className="w-full h-full object-cover"
-              />
+            <div className="w-10 h-10 rounded-full border border-slate-500 flex items-center justify-center bg-slate-700 shrink-0">
             </div>
             <span className="hidden sm:block max-w-28 truncate text-xs font-medium text-white">
               {user?.name || "Profile"}

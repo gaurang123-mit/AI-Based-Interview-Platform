@@ -1,7 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 import {
   createContext,
-  useCallback,
   useContext,
   useEffect,
   useMemo,
@@ -45,6 +44,7 @@ export const AuthContextProvider = ({ children }) => {
   const login =(user) => {
     setAuthUser(user);//setting the user in the state when they log in
   };
+  
 
   const logout = () => {
     setAuthUser(null);//clearing the user from the state when they log out
