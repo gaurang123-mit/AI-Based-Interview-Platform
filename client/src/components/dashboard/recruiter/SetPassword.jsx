@@ -1,8 +1,12 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 import api from "../../../api/axiosClient";
-import RecruiterLayout from "../../../layouts/RecruiterLayout"
+import { useAuthContext } from "../../../context/AuthContext";
 
-function SetPassword({onPasswordChanged}) {
+function SetPassword() {
+  const navigate = useNavigate();
+  const { setAuthUser } = useAuthContext();
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [message, setMessage] = useState("");
@@ -17,6 +21,11 @@ function SetPassword({onPasswordChanged}) {
       return;
     }
 
+    if (newPassword.length < 6) {
+      setMessage("Password must be at least 6 characters.");
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -24,15 +33,20 @@ function SetPassword({onPasswordChanged}) {
              password:newPassword,
       });
 
-      if(response.status == 200){
-         onPasswordChanged();
-      }
+      setAuthUser((currentUser) =>
+        currentUser
+          ? {
+              ...currentUser,
+              passwordChanged: true,
+            }
+          : currentUser
+      );
 
-      setMessage(response.data?.message || "Password updated. Redirecting to login...");
-      console.log("Reset password response:", response.data);
+      toast.success(response.data?.message || "Password updated successfully.");
+      navigate("/dashboard", { replace: true });
 
     } catch (error) {
-       console.log(error)
+       setMessage(error.response?.data?.message || "Unable to set password.");
     } finally {
       setLoading(false);
     }

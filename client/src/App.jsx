@@ -23,6 +23,9 @@ const AuthLoadingScreen = () => (
   <div className="min-h-screen bg-[#080d16]" />
 );
 
+const recruiterNeedsPasswordSetup = (user) =>
+  user?.role === "recruiter" && user?.passwordChanged !== true;
+
 const PublicOnly = ({ children }) => {
   const { authUser, authLoading } = useAuthContext();
 
@@ -30,17 +33,38 @@ const PublicOnly = ({ children }) => {
     return <AuthLoadingScreen />;
   }
 
-  return authUser ? <Navigate to="/dashboard" replace /> : children;
+  return authUser ? (
+    <Navigate
+      to={recruiterNeedsPasswordSetup(authUser) ? "/set-password" : "/dashboard"}
+      replace
+    />
+  ) : (
+    children
+  );
 };
 
-const PrivateOnly = ({ children }) => {
+const PrivateOnly = ({ children, allowPasswordSetup = false }) => {
   const { authUser, authLoading } = useAuthContext();
 
   if (authLoading) {
     return <AuthLoadingScreen />;
   }
 
-  return authUser ? children : <Navigate to="/login" replace />;
+  if (!authUser) {
+    return <Navigate to="/login" replace />;
+  }
+
+  const mustSetPassword = recruiterNeedsPasswordSetup(authUser);
+
+  if (mustSetPassword && !allowPasswordSetup) {
+    return <Navigate to="/set-password" replace />;
+  }
+
+  if (!mustSetPassword && allowPasswordSetup) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  return children;
 };
 
 function AppRoutes() {
@@ -65,7 +89,14 @@ function AppRoutes() {
             <AuthLoadingScreen />
           ) :
             authUser ? (
-              <Navigate to="/dashboard" replace />
+              <Navigate
+                to={
+                  recruiterNeedsPasswordSetup(authUser)
+                    ? "/set-password"
+                    : "/dashboard"
+                }
+                replace
+              />
             ) : (
               <Navigate to="/login" replace />
             )
@@ -132,7 +163,7 @@ function AppRoutes() {
       <Route
         path="/set-password"
         element={
-          <PrivateOnly>
+          <PrivateOnly allowPasswordSetup>
             <SetPassword />
           </PrivateOnly>
         }
@@ -162,7 +193,16 @@ function AppRoutes() {
           authLoading ? (
             <AuthLoadingScreen />
           ) : (
-            <Navigate to={authUser ? "/dashboard" : "/login"} replace />
+            <Navigate
+              to={
+                authUser
+                  ? recruiterNeedsPasswordSetup(authUser)
+                    ? "/set-password"
+                    : "/dashboard"
+                  : "/login"
+              }
+              replace
+            />
           )
         }
       />

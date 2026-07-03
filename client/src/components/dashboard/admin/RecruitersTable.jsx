@@ -11,7 +11,6 @@ const RecruitersTable = () => {
   const [filters, setFilters] = useState({
     name: "",
     email: "",
-    phone: "",
   });
 
   const fetchRecruiters = async () => {
@@ -92,12 +91,6 @@ const RecruitersTable = () => {
       );
     }
 
-    if (filters.phone) {
-      filtered = filtered.filter((recruiter) =>
-        recruiter.ph_no?.includes(filters.phone)
-      );
-    }
-
     setResults(filtered);
   };
 
@@ -127,7 +120,6 @@ const RecruitersTable = () => {
     setFilters({
       name: "",
       email: "",
-      phone: "",
     });
 
     setResults(allRecruiters);
@@ -192,15 +184,6 @@ const RecruitersTable = () => {
           name="email"
           placeholder="Search by Email"
           value={filters.email}
-          onChange={handleChange}
-          className="bg-slate-800 border border-slate-700 rounded-lg p-3"
-        />
-
-        <input
-          type="text"
-          name="phone"
-          placeholder="Search by Phone Number"
-          value={filters.phone}
           onChange={handleChange}
           className="bg-slate-800 border border-slate-700 rounded-lg p-3"
         />

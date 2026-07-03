@@ -12,8 +12,6 @@ function Login({ onForgotPasswordClick }) {
   const emailRef = useRef(null);
   const passwordRef = useRef(null);
   const [loading, setLoading] = useState(false);
-  const [email,setEmail] = useState("");
-  const [password,setPassword] = useState("");
 
  const handleSubmit = async (e) => {
   e.preventDefault();
@@ -34,13 +32,17 @@ function Login({ onForgotPasswordClick }) {
       password,
     });
 
-    login(data.user);
+    const user = data.user;
+    const mustChangePassword =
+      user?.role === "recruiter" && user?.passwordChanged !== true;
+
+    login(user);
 
     toast.success(data.message || "Login successful.");
 
     formRef.current?.reset();
 
-    if (!data.passwordChanged) {
+    if (mustChangePassword) {
       navigate("/set-password", { replace: true });
     } else {
       navigate("/dashboard", { replace: true });

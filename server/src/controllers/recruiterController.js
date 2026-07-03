@@ -70,6 +70,11 @@ const Deleteresults = async(req,res)=>{
 const setpassword = async(req,res)=>{
   const { password } = req.body;
   try{
+    if (!password || password.length < 6) {
+      return res.status(400).json({
+        message: "Password must be at least 6 characters"
+      });
+    }
 
     const hashedPassword = await bcrypt.hash(password,10)
     await Admin.findByIdAndUpdate(req.user.id,{
@@ -77,7 +82,10 @@ const setpassword = async(req,res)=>{
       passwordChanged: true
     })
 
-    return res.status(200).json({message:"the password set successfully"})
+    return res.status(200).json({
+      message:"the password set successfully",
+      passwordChanged: true
+    })
   }
   catch(err){
 
