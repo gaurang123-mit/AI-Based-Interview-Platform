@@ -10,7 +10,6 @@ const [saveSuccess, setSaveSuccess] = useState("");
 
  const [profileData, setProfileData] = useState({
   name: "",
-  phone: "",
   email: "",
 
   skills: [],
@@ -61,8 +60,6 @@ useEffect(() => {
       setProfileData({
 
         name: user.name || "",
-
-        phone: user.ph_no || "",
 
         email: user.email || "",
 
@@ -165,7 +162,6 @@ const handleResumeUpload = async (e) => {
 
     setProfileData({
       name: parsedData.name || "",
-      phone: parsedData.ph_no || "",
       email: parsedData.email || "",
       skills: parsedData.skills || [],
       education:
@@ -226,7 +222,6 @@ const handleResumeUpload = async (e) => {
       "/candidate/profile",
       {
         name:             profileData.name,
-        ph_no:            profileData.phone,
         email:            profileData.email,
         skills:           profileData.skills,
        education: profileData.education,
@@ -240,8 +235,6 @@ projects: profileData.projects,
     setSaveSuccess("Profile saved successfully!");
 
   } catch (err) {
-    // This shows the exact message from backend
-    // "Email is already in use" or "Phone number is already in use"
     const msg = err.response?.data?.message || "Failed to save profile.";
     setSaveError(msg);
   }
@@ -358,18 +351,6 @@ projects: profileData.projects,
             className="bg-slate-800 border border-slate-700 rounded-lg p-3 text-white placeholder:text-slate-400"
           />
 
-          <input
-            type="text"
-            placeholder="Phone Number"
-            value={profileData.phone}
-            onChange={(e) =>
-              setProfileData({
-                ...profileData,
-                phone: e.target.value,
-              })
-            }
-            className="bg-slate-800 border border-slate-700 rounded-lg p-3 text-white placeholder:text-slate-400"
-          />
 
         </div>
       </div>

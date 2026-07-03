@@ -223,9 +223,6 @@ const RecruitersTable = () => {
               {recruiter.email}
             </p>
 
-            <p className="text-slate-400">
-              {recruiter.ph_no}
-            </p>
 
                                 <button
                     onClick={() => handleDeleteRecruiter(recruiter._id)}

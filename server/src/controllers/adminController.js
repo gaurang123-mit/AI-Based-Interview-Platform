@@ -5,7 +5,7 @@ const bcrypt = require("bcryptjs")
 const getCandidates = async (req, res) => {
   try {
     const candidates = await User.find({ role: "candidate" })
-      .select("_id name email ph_no");
+      .select("_id name email");
 
     res.status(200).json({ candidates });
   } catch (error) {

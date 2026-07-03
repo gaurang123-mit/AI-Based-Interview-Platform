@@ -26,7 +26,6 @@ const userSchema = new mongoose.Schema({
     default: "candidate",
   },
 
-  ph_no: String,
 
   skills: [String],
 

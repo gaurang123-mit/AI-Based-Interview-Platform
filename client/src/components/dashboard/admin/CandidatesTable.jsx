@@ -9,7 +9,6 @@ const CandidatesTable = () => {
   const [filters, setFilters] = useState({
     name: "",
     email: "",
-    phone: "",
   });
 
   useEffect(() => {
@@ -79,11 +78,6 @@ const handleDeleteCandidate = async (id) => {
       );
     }
 
-    if (filters.phone) {
-      filtered = filtered.filter((candidate) =>
-        candidate.ph_no?.includes(filters.phone)
-      );
-    }
 
     setResults(filtered);
   };
@@ -94,7 +88,6 @@ const handleDeleteCandidate = async (id) => {
     setFilters({
       name: "",
       email: "",
-      phone: "",
     });
 
     setResults(allCandidates);
@@ -133,14 +126,6 @@ const handleDeleteCandidate = async (id) => {
           className="bg-slate-800 border border-slate-700 rounded-lg p-3"
         />
 
-        <input
-          type="text"
-          name="phone"
-          placeholder="Search by Phone Number"
-          value={filters.phone}
-          onChange={handleChange}
-          className="bg-slate-800 border border-slate-700 rounded-lg p-3"
-        />
       </div>
 
       <div className="flex gap-3 mb-5">
@@ -183,9 +168,6 @@ const handleDeleteCandidate = async (id) => {
                 Delete
                 </button>
 
-            <p className="text-slate-400">
-              {candidate.ph_no}
-            </p>
           </div>
         ))}
       </div>

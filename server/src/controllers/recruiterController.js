@@ -10,7 +10,7 @@ const bcrypt  = require("bcryptjs")
 const getCandidates = async (req, res) => {
   try {
     const candidates = await User.find({ role: "candidate" })
-      .select("name  ph_no email skills experience education profileCompleted")
+      .select("name email skills experience education profileCompleted")
       .sort({ createdAt: -1 });
     res.status(200).json({ candidates });
   } catch (err) {

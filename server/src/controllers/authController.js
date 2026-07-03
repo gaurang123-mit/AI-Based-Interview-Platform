@@ -91,12 +91,12 @@ const getMe = async (req, res) => {
 const registerUser = async (req, res) => {
     try {
 
-        const { name, email, ph_no, password } = req.body;
+        const { name, email, password } = req.body;
 
 
         if (!name || !email || !password) {
             return res.status(400).json({
-                message: "Name, email, phone number and password are required"
+                message: "Name, email and password are required"
             });
         }
 
@@ -106,17 +106,14 @@ const registerUser = async (req, res) => {
         const recruiter = await Admin.findOne({ email: normalizedEmail })
 
         const candidate = await User.findOne({
-            $or: [
-                { email: normalizedEmail },
-                { ph_no: ph_no.trim() }
-            ]
+                 email: normalizedEmail 
         })
 
         const existingUser = admin || recruiter || candidate;
 
         if (existingUser) {
             return res.status(400).json({
-                message: "User already exists with this email or phone number"
+                message: "User already exists with this email"
             });
         }
 
@@ -128,7 +125,6 @@ const registerUser = async (req, res) => {
         const user = await User.create({
             name: name.trim(),
             email: normalizedEmail,
-            ph_no: ph_no.trim(),
             password: hashedPassword,
             role: "candidate",
         });

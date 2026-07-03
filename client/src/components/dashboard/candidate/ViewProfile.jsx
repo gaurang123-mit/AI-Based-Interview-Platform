@@ -75,16 +75,6 @@ const ViewProfile = ({onEdit}) => {
             </p>
           </div>
 
-          <div>
-            <p className="text-slate-400">
-              Phone
-            </p>
-
-            <p className="text-white">
-              {profile.ph_no}
-            </p>
-          </div>
-
         </div>
 
       </div>

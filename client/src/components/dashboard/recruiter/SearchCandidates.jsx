@@ -158,7 +158,6 @@ const SearchCandidates = () => {
               </div>
 
               <p className="text-sm text-gray-400 mb-2">{c.email}</p>
-              <p className="text-sm text-gray-400 mb-2">{c.ph_no}</p>
 
               {/* Skills */}
               {c.skills?.length > 0 && (

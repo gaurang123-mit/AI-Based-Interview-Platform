@@ -137,7 +137,6 @@ Schema:
 
 {
   "name": "",
-  "phone": "",
   "email":"",
   "skills": [],
   "education": [
@@ -251,7 +250,6 @@ const saveProfile = async (req, res) => {
   try {
     const {
       name,
-      phone,
       email,
       skills,
       education,
@@ -272,30 +270,11 @@ const saveProfile = async (req, res) => {
       }
     }
 
-    // Check if phone is already taken by another user
-    if (phone) {
-  const last10 = phone.replace(/\D/g, "").slice(-10); // strip non-digits, take last 10
-
-  const allUsers = await User.find({
-    ph_no: { $exists: true, $ne: null },
-    _id:   { $ne: req.user.id },
-  }).select("ph_no");
-
-  const phoneExists = allUsers.some((u) => {
-    const existing = u.ph_no?.replace(/\D/g, "").slice(-10);
-    return existing === last10;
-  });
-
-  if (phoneExists) {
-    return res.status(400).json({ message: "Phone number is already in use by another account." });
-  }
-}
 
     const user = await User.findByIdAndUpdate(
       req.user.id,
       {
         name,
-        ph_no:    phone, // ← match your schema field name
         email,
         skills,
         education,

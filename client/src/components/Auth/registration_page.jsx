@@ -1,8 +1,6 @@
 import { useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import PhoneInput from "react-phone-number-input";
-import "react-phone-number-input/style.css";
-import { KeyRound, Mail, Phone, UserPlus } from "lucide-react";
+import { KeyRound, Mail,  UserPlus } from "lucide-react";
 import toast from "react-hot-toast";
 import api, { getErrorMessage } from "../../api/axiosClient";
 import { useAuthContext } from "../../context/AuthContext";
@@ -14,28 +12,19 @@ function RegistrationPage() {
   const nameRef = useRef(null);
   const emailRef = useRef(null);
   const passwordRef = useRef(null);
-  const phoneRef = useRef("");
-  const [phone, setPhone] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handlePhoneChange = (value) => {
-    const nextValue = value || "";
-    phoneRef.current = nextValue;
-    setPhone(nextValue);
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const phoneNumber = (phoneRef.current || "").replace(/\D/g, "").slice(-10);
     const payload = {
       name: nameRef.current?.value?.trim(),
       email: emailRef.current?.value?.trim(),
       password: passwordRef.current?.value || "",
-      ph_no: phoneNumber,
     };
 
-    if (!payload.name || !payload.email || !payload.password || !payload.ph_no) {
+    if (!payload.name || !payload.email || !payload.password) {
       toast.error("Please complete all registration fields.");
       return;
     }
@@ -47,8 +36,6 @@ function RegistrationPage() {
       login(response.data?.user);
       toast.success(response.data?.message || "Registration successful.");
       formRef.current?.reset();
-      setPhone("");
-      phoneRef.current = "";
       navigate("/dashboard", { replace: true });
     } catch (error) {
       toast.error(
@@ -139,20 +126,6 @@ function RegistrationPage() {
             </div>
           </label>
 
-          <label className="grid gap-2 text-sm font-semibold text-slate-200">
-            <span>Phone</span>
-            <div className="flex min-h-12 items-center gap-3 rounded-lg border border-slate-500/30 bg-slate-950/50 px-3 text-slate-400 focus-within:border-teal-300 focus-within:ring-4 focus-within:ring-teal-500/10 [&_.PhoneInput]:w-full [&_.PhoneInputInput]:min-w-0 [&_.PhoneInputInput]:flex-1 [&_.PhoneInputInput]:border-0 [&_.PhoneInputInput]:bg-transparent [&_.PhoneInputInput]:text-white [&_.PhoneInputInput]:outline-none [&_.PhoneInputInput::placeholder]:text-slate-500">
-              <Phone size={18} className="shrink-0" />
-              <PhoneInput
-                international
-                defaultCountry="IN"
-                placeholder="Enter phone number"
-                value={phone}
-                onChange={handlePhoneChange}
-                required
-              />
-            </div>
-          </label>
 
           <button
             type="submit"
