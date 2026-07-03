@@ -33,7 +33,6 @@ function ResetPassword({ email, otp, onBackToLogin }) {
         email,
         otp,
         password,
-        confirmPassword,
       });
 
       toast.success(response.data?.message || "Password updated.");

@@ -225,20 +225,25 @@ const forgotPassword = async (req, res) => {
         }
 
         const normalizedEmail = email.toLowerCase().trim();
+
+        const recruiter = await Admin.findOne({email: normalizedEmail})
+
         const user = await User.findOne({ email: normalizedEmail });
 
-        if (!user) {
+        const cur_user = recruiter || user
+
+        if (!cur_user) {
             return res.status(404).json({ message: "User does not exist" });
         }
 
         const otp = crypto.randomInt(100000, 1000000).toString();
-        user.resetPasswordOtp = otp;
-        user.resetPasswordOtpExpire = Date.now() + 10 * 60 * 1000;
-        await user.save();
+        cur_user.resetPasswordOtp = otp;
+        cur_user.resetPasswordOtpExpire = Date.now() + 10 * 60 * 1000;
+        await cur_user.save();
 
 
         try {
-            await sendPasswordResetOtp(user, otp);
+            await sendPasswordResetOtp(cur_user, otp);
         } catch (mailError) {
             if (mailError.code === "EAUTH" || mailError.responseCode === 535) {
                 return res.status(500).json({
@@ -269,7 +274,13 @@ const verifyOtp = async (req, res) => {
         }
 
         const normalizedEmail = email.toLowerCase().trim();
-
+        const recruiter = await Admin.findOne({
+               email: normalizedEmail,
+            resetPasswordOtp: otp,
+            resetPasswordOtpExpire: {
+                $gt: Date.now()
+            }
+        })
 
         const user = await User.findOne({
             email: normalizedEmail,
@@ -279,16 +290,18 @@ const verifyOtp = async (req, res) => {
             }
         });
 
-        if (!user) {
+        const cur_user = recruiter || user;
+
+        if (!cur_user) {
             return res.status(400).json({
                 message: "Invalid or expired OTP"
             });
         }
 
-        user.resetPasswordOtp = undefined;
-        user.canResetPassword = true;
+        cur_user.resetPasswordOtp = undefined;
+        cur_user.canResetPassword = true;
 
-        await user.save();
+        await cur_user.save();
 
         res.status(200).json({
             message: "OTP verified successfully"
@@ -316,6 +329,12 @@ const resetPassword = async (req, res) => {
         const normalizedEmail = email.toLowerCase().trim();
 
 
+        const recruiter = await Admin.findOne({
+            email: normalizedEmail,
+            resetPasswordOtpExpire: {
+                $gt: Date.now()
+            }
+        });
         const user = await User.findOne({
             email: normalizedEmail,
             resetPasswordOtpExpire: {
@@ -323,23 +342,25 @@ const resetPassword = async (req, res) => {
             }
         });
 
-        if (!user) {
+        const cur_user = recruiter || user
+
+        if (!cur_user) {
             return res.status(400).json({
                 message: "Invalid or expired OTP"
             });
         }
 
-        if (!user.canResetPassword) {
+        if (!cur_user.canResetPassword) {
             return res.status(400).json({
                 message: "Invalid or expired OTP"
             });
         }
 
-        user.password = await bcrypt.hash(password, 10);
-        user.canResetPassword = undefined;
-        user.resetPasswordOtpExpire = undefined;
+        cur_user.password = await bcrypt.hash(password, 10);
+        cur_user.canResetPassword = undefined;
+        cur_user.resetPasswordOtpExpire = undefined;
 
-        await user.save();
+        await cur_user.save();
 
         res.status(200).json({
             message: "Password reset successfully"

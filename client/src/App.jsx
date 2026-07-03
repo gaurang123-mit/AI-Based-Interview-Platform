@@ -117,8 +117,9 @@ function AppRoutes() {
           <PublicOnly>
             <AuthShell>
               <ForgotPassword
-                initialEmail={forgotEmail}
+                userEmail={forgotEmail}
                 onOtpVerified={handleOtpVerified}
+                onBackToLogin={()=> navigate("/login")}
               />
             </AuthShell>
           </PublicOnly>
