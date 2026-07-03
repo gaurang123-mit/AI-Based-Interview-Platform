@@ -23,9 +23,6 @@ const AuthLoadingScreen = () => (
   <div className="min-h-screen bg-[#080d16]" />
 );
 
-const recruiterNeedsPasswordSetup = (user) =>
-  user?.role === "recruiter" && user?.passwordChanged !== true;
-
 const PublicOnly = ({ children }) => {
   const { authUser, authLoading } = useAuthContext();
 
@@ -33,38 +30,28 @@ const PublicOnly = ({ children }) => {
     return <AuthLoadingScreen />;
   }
 
-  return authUser ? (
-    <Navigate
-      to={recruiterNeedsPasswordSetup(authUser) ? "/set-password" : "/dashboard"}
-      replace
-    />
-  ) : (
-    children
-  );
+  if (!authUser) {
+    return children;
+  }
+
+  if (
+    authUser.role === "recruiter" &&
+    !authUser.passwordChanged
+  ) {
+    return <Navigate to="/set-password" replace />;
+  }
+
+  return <Navigate to="/dashboard" replace />;
 };
 
-const PrivateOnly = ({ children, allowPasswordSetup = false }) => {
+const PrivateOnly = ({ children }) => {
   const { authUser, authLoading } = useAuthContext();
 
   if (authLoading) {
     return <AuthLoadingScreen />;
   }
 
-  if (!authUser) {
-    return <Navigate to="/login" replace />;
-  }
-
-  const mustSetPassword = recruiterNeedsPasswordSetup(authUser);
-
-  if (mustSetPassword && !allowPasswordSetup) {
-    return <Navigate to="/set-password" replace />;
-  }
-
-  if (!mustSetPassword && allowPasswordSetup) {
-    return <Navigate to="/dashboard" replace />;
-  }
-
-  return children;
+  return authUser ? children : <Navigate to="/login" replace />;
 };
 
 function AppRoutes() {
@@ -89,14 +76,7 @@ function AppRoutes() {
             <AuthLoadingScreen />
           ) :
             authUser ? (
-              <Navigate
-                to={
-                  recruiterNeedsPasswordSetup(authUser)
-                    ? "/set-password"
-                    : "/dashboard"
-                }
-                replace
-              />
+              <Navigate to="/dashboard" replace />
             ) : (
               <Navigate to="/login" replace />
             )
@@ -137,8 +117,9 @@ function AppRoutes() {
           <PublicOnly>
             <AuthShell>
               <ForgotPassword
-                initialEmail={forgotEmail}
+                userEmail={forgotEmail}
                 onOtpVerified={handleOtpVerified}
+                onBackToLogin={() => navigate("/login")}
               />
             </AuthShell>
           </PublicOnly>
@@ -163,8 +144,10 @@ function AppRoutes() {
       <Route
         path="/set-password"
         element={
-          <PrivateOnly allowPasswordSetup>
-            <SetPassword />
+          <PrivateOnly>
+            <AuthShell>
+            <SetPassword onPasswordChanged={()=> navigate("/dashboard")} />
+            </AuthShell>
           </PrivateOnly>
         }
       />
@@ -175,6 +158,7 @@ function AppRoutes() {
           <PrivateOnly>
             <Dashboard />
           </PrivateOnly>
+
         }
       />
 
@@ -193,16 +177,7 @@ function AppRoutes() {
           authLoading ? (
             <AuthLoadingScreen />
           ) : (
-            <Navigate
-              to={
-                authUser
-                  ? recruiterNeedsPasswordSetup(authUser)
-                    ? "/set-password"
-                    : "/dashboard"
-                  : "/login"
-              }
-              replace
-            />
+            <Navigate to={authUser ? "/dashboard" : "/login"} replace />
           )
         }
       />

@@ -38,7 +38,7 @@ const formatUserResponse = (user) => {
         name: user.name,
         email: user.email,
         role: user.role,
-        ph_no: user.ph_no,
+        passwordChanged: user.passwordChanged
     };
 
     if (user.role === "recruiter") {
@@ -188,9 +188,8 @@ const loginUser = async (req, res) => {
             generateTokenAndSetCookie(recruiter, res);
             return res.status(200).json({
                 message: "Recruiter logged in successfully",
-                user: formatUserResponse(recruiter),
-                passwordChanged: recruiter.passwordChanged === true,
-                mustChangePassword: recruiter.passwordChanged !== true
+                user:formatUserResponse(recruiter),
+                // passwordChanged: recruiter.passwordChanged
 
             });
 

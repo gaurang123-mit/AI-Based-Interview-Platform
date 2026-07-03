@@ -30,11 +30,12 @@ const createInterviewPost = async (req, res) => {
     const skillsArray = skills
       ? skills.split(",").map((s) => s.trim()).filter(Boolean)
       : [];
-    const user = await User.find({role:"candidate",email:Email})
+    const user = await User.find({email:Email})
 
-    if (!user){
+    if (user.length === 0 ){
       return res.status(403).json({message:"invalid user or user does not exist."});
     }
+
 
     const post = await InterviewPost.create({
       roundName,
@@ -51,6 +52,7 @@ const createInterviewPost = async (req, res) => {
       candidateEmail: Email,
       postedBy: req.user.id,
     });
+
 
     return res.status(201).json({
       message: "Interview posted successfully.",

@@ -46,9 +46,11 @@ const PostInterview = () => {
 
     setLoading(true);
     try {
-      await api.post("/interview-posts/post", form);
-
-      setSuccessMsg(`Interview posted! It will be available for candidates for 2 hours.`);
+      const res = await api.post("/interview-posts/post", form);
+      
+      if (res.status == 201){
+        setSuccessMsg(`Interview posted! It will be available for candidates for 2 hours.`);
+      }
 
       // Reset form after successful post
       setForm({

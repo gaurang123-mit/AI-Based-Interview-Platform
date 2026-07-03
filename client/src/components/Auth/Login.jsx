@@ -29,7 +29,7 @@ function Login({ onForgotPasswordClick }) {
   try {
     const { data } = await api.post("/auth/login", {
       email,
-      password,
+      password
     });
 
     const user = data.user;
@@ -41,11 +41,13 @@ function Login({ onForgotPasswordClick }) {
     toast.success(data.message || "Login successful.");
 
     formRef.current?.reset();
-
-    if (mustChangePassword) {
-      navigate("/set-password", { replace: true });
-    } else {
-      navigate("/dashboard", { replace: true });
+    
+    if (!data.passwordChanged) {
+      console.log("navigated to set password")
+      navigate("/set-password");
+    } 
+    else {
+      navigate("/dashboard");
     }
   } catch (error) {
     toast.error(
@@ -131,26 +133,6 @@ function Login({ onForgotPasswordClick }) {
               />
             </div>
           </label>
-
-          {/* <div className="input-group">
-            <input
-              type="email"
-              placeholder="Email ID"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </div>
-
-          <div className="input-group">
-            <input
-              type="password"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div> */}
 
           <div className="options">
 
