@@ -30,7 +30,18 @@ const PublicOnly = ({ children }) => {
     return <AuthLoadingScreen />;
   }
 
-  return authUser ? <Navigate to="/dashboard" replace /> : children;
+  if (!authUser) {
+    return children;
+  }
+
+  if (
+    authUser.role === "recruiter" &&
+    !authUser.passwordChanged
+  ) {
+    return <Navigate to="/set-password" replace />;
+  }
+
+  return <Navigate to="/dashboard" replace />;
 };
 
 const PrivateOnly = ({ children }) => {
@@ -133,7 +144,7 @@ function AppRoutes() {
         path="/set-password"
         element={
           <PrivateOnly>
-            <SetPassword />
+            <SetPassword onPasswordChanged={()=> navigate("/dashboard")} />
           </PrivateOnly>
         }
       />
@@ -144,6 +155,7 @@ function AppRoutes() {
           <PrivateOnly>
             <Dashboard />
           </PrivateOnly>
+
         }
       />
 

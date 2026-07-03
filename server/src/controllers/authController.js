@@ -38,7 +38,7 @@ const formatUserResponse = (user) => {
         name: user.name,
         email: user.email,
         role: user.role,
-        ph_no: user.ph_no,
+        passwordChanged: user.passwordChanged
     };
 };
 
@@ -176,10 +176,10 @@ const loginUser = async (req, res) => {
             }
 
             generateTokenAndSetCookie(recruiter, res);
-            res.status(200).json({
+            return res.status(200).json({
                 message: "Recruiter logged in successfully",
                 user:formatUserResponse(recruiter),
-                passwordChanged: recruiter.passwordChanged
+                // passwordChanged: recruiter.passwordChanged
 
             });
 

@@ -31,7 +31,7 @@ function Login({ onForgotPasswordClick }) {
   try {
     const { data } = await api.post("/auth/login", {
       email,
-      password,
+      password
     });
 
     login(data.user);
@@ -39,11 +39,13 @@ function Login({ onForgotPasswordClick }) {
     toast.success(data.message || "Login successful.");
 
     formRef.current?.reset();
-
+    
     if (!data.passwordChanged) {
-      navigate("/set-password", { replace: true });
-    } else {
-      navigate("/dashboard", { replace: true });
+      console.log("navigated to set password")
+      navigate("/set-password");
+    } 
+    else {
+      navigate("/dashboard");
     }
   } catch (error) {
     toast.error(
