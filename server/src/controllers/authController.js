@@ -33,18 +33,25 @@ const sendPasswordResetOtp = async (user, otp) => {
 
 
 const formatUserResponse = (user) => {
-    return {
+    const response = {
         id: user._id,
         name: user.name,
         email: user.email,
         role: user.role,
         passwordChanged: user.passwordChanged
     };
+
+    if (user.role === "recruiter") {
+        response.passwordChanged = user.passwordChanged === true;
+    }
+
+    return response;
 };
 
 const getMe = async (req, res) => {
     try {
         const { id, role } = req.user;
+     
 
         if (role === "admin" && id === "admin") {
             return res.status(200).json({
@@ -62,6 +69,7 @@ const getMe = async (req, res) => {
                 ? await Admin.findById(id)
                 : await User.findById(id);
 
+           
         if (!user) {
             return res.status(404).json({
                 message: "User not found"
@@ -167,7 +175,9 @@ const loginUser = async (req, res) => {
 
         const normalizedEmail = email.toLowerCase().trim();
         const recruiter = await Admin.findOne({ email: normalizedEmail })
+        
         if (recruiter) {
+           
             const isRecPass = await bcrypt.compare(password, recruiter.password);
             if (!isRecPass) {
                 return res.status(401).json({

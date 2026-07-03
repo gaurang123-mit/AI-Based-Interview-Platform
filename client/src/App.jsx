@@ -145,7 +145,9 @@ function AppRoutes() {
         path="/set-password"
         element={
           <PrivateOnly>
+            <AuthShell>
             <SetPassword onPasswordChanged={()=> navigate("/dashboard")} />
+            </AuthShell>
           </PrivateOnly>
         }
       />
