@@ -109,6 +109,13 @@ const emailVerify = async (req, res) => {
         if (!email) {
             return res.status(400).json({ message: "Email is required" });
         }
+        const existingUser = await Admin.findOne({ email: email.toLowerCase().trim() });
+        const existingCandidate = await User.findOne({ email: email.toLowerCase().trim() });
+        if (existingUser || existingCandidate) {
+            return res.status(409).json({
+                message: "The user with this email is already registered"
+            });
+        }
 
         const normalizedEmail = email.toLowerCase().trim();
         const otp = crypto.randomInt(100000, 1000000).toString();

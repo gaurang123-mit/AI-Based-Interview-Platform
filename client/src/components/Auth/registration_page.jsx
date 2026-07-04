@@ -53,15 +53,16 @@ function RegistrationPage() {
   };
     const handleVerifyEmail = async () => {
     const email = emailRef.current?.value?.trim();
-    try{ const { data } = await api.post("/auth/verify-email", {
+    try{ 
+      const { data } = await api.post("/auth/verify-email", {
       email
     });
     toast.success(data.message || "Email verification initiated.");
+    setShowOtp(true);
   }catch(error){
-    toast.error("Failed to initiate email verification.");
+    toast.error(error.response?.data?.message ||"Failed to initiate email verification.");
   }
 
-  setShowOtp(true);
 
   }
   const handleOtpSubmit = async () => {

@@ -29,6 +29,8 @@ router.get(
 );
 
 router.post("/add-recruiter",authMiddleware,roleMiddleware("admin"),addRecruiter)
+
+
 router.delete(
   "/candidates/:id",
   authMiddleware,
