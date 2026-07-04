@@ -12,6 +12,7 @@ function Login({ onForgotPasswordClick }) {
   const emailRef = useRef(null);
   const passwordRef = useRef(null);
   const [loading, setLoading] = useState(false);
+ 
 
  const handleSubmit = async (e) => {
   e.preventDefault();
@@ -70,6 +71,9 @@ function Login({ onForgotPasswordClick }) {
     onForgotPasswordClick(email);
   };
 
+
+  
+
   return (
     <main className="relative z-10 mx-auto grid min-h-screen w-[min(1120px,calc(100%-32px))] grid-cols-1 items-center gap-7 py-8 md:grid-cols-[minmax(0,1fr)_minmax(360px,440px)] md:gap-12 md:py-12">
       <section className="max-w-xl" aria-label="Interview platform overview">
@@ -118,6 +122,9 @@ function Login({ onForgotPasswordClick }) {
             </div>
           </label>
 
+        
+
+ 
           <label className="grid gap-2 text-sm font-semibold text-slate-200">
             <span>Password</span>
             <div className="flex min-h-12 items-center gap-3 rounded-lg border border-slate-500/30 bg-slate-950/50 px-3 text-slate-400 focus-within:border-teal-300 focus-within:ring-4 focus-within:ring-teal-500/10">

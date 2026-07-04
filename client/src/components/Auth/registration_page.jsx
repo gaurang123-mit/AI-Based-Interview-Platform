@@ -12,12 +12,18 @@ function RegistrationPage() {
   const nameRef = useRef(null);
   const emailRef = useRef(null);
   const passwordRef = useRef(null);
+  const otpRef = useRef(null);
   const [loading, setLoading] = useState(false);
+  const [showOtp, setShowOtp] = useState(false);
+  const [isEmailVerified, setIsEmailVerified] = useState(false);
 
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+ if (!isEmailVerified) {
+    toast.error("Please verify your email before creating an account.");
+    return;
+  }
     const payload = {
       name: nameRef.current?.value?.trim(),
       email: emailRef.current?.value?.trim(),
@@ -45,6 +51,40 @@ function RegistrationPage() {
       setLoading(false);
     }
   };
+    const handleVerifyEmail = async () => {
+    const email = emailRef.current?.value?.trim();
+    try{ const { data } = await api.post("/auth/verify-email", {
+      email
+    });
+    toast.success(data.message || "Email verification initiated.");
+  }catch(error){
+    toast.error("Failed to initiate email verification.");
+  }
+
+  setShowOtp(true);
+
+  }
+  const handleOtpSubmit = async () => {
+    try{
+      const email = emailRef.current?.value?.trim();
+    const otp = otpRef.current?.value?.trim();
+
+    if (!email || !otp) {
+      toast.error("Please enter both email and OTP.");
+      return;
+    }
+
+    const { data } = await api.post("/auth/verify-email-otp", {
+        email: emailRef.current.value,
+    otp: otpRef.current.value,
+    });
+    setIsEmailVerified(true);
+    setShowOtp(false);
+    toast.success(data.message || "otp verified successfully.");
+    }catch(error){
+      toast.error(getErrorMessage(error, "Registration failed. Please try again."));
+    }
+  }
 
   return (
     <main className="relative z-10 mx-auto grid min-h-screen w-[min(1120px,calc(100%-32px))] grid-cols-1 items-center gap-7 py-8 md:grid-cols-[minmax(0,1fr)_minmax(360px,440px)] md:gap-12 md:py-12">
@@ -110,6 +150,42 @@ function RegistrationPage() {
             </div>
           </label>
 
+          {isEmailVerified ? (
+          <span className="text-sm font-bold text-green-500">
+            ✓ Email Verified
+          </span>
+        ) : (
+          <button
+            type="button"
+            className="cursor-pointer w-fit border-0 bg-transparent text-sm font-bold text-teal-300 hover:text-teal-200"
+            onClick={handleVerifyEmail}
+          >
+            Verify Email
+          </button>
+        )}
+
+          {showOtp && (
+            <label className="grid gap-2 text-sm font-semibold text-slate-200">
+            <span>Enter OTP</span>
+            <div className="flex min-h-12 items-center gap-3 rounded-lg border border-slate-500/30 bg-slate-950/50 px-3 text-slate-400 focus-within:border-teal-300 focus-within:ring-4 focus-within:ring-teal-500/10">
+              <KeyRound size={18} className="shrink-0" />
+              <input
+                ref={otpRef}
+                type="text"
+                name="otp"
+                placeholder="Enter the OTP"
+                className="min-w-0 flex-1 bg-transparent text-white outline-none placeholder:text-slate-500"
+                required
+              />
+            </div>
+            <button type="button" className="cursor-pointer w-fit border-0 bg-transparent text-sm font-bold text-teal-300 hover:text-teal-200 outline-black" onClick={handleOtpSubmit}>
+            Verify otp
+          </button>
+          </label>
+          
+)}
+
+
           <label className="grid gap-2 text-sm font-semibold text-slate-200">
             <span>Password</span>
             <div className="flex min-h-12 items-center gap-3 rounded-lg border border-slate-500/30 bg-slate-950/50 px-3 text-slate-400 focus-within:border-teal-300 focus-within:ring-4 focus-within:ring-teal-500/10">
@@ -129,7 +205,7 @@ function RegistrationPage() {
 
           <button
             type="submit"
-            className="flex min-h-12 items-center justify-center rounded-lg bg-emerald-600 text-sm font-extrabold text-white transition hover:bg-emerald-500 disabled:cursor-not-allowed disabled:opacity-60"
+            className="cursor-pointer flex min-h-12 items-center justify-center rounded-lg bg-emerald-600 text-sm font-extrabold text-white transition hover:bg-emerald-500 disabled:cursor-not-allowed disabled:opacity-60"
             disabled={loading}
           >
             {loading ? "Creating account..." : "Create account"}
