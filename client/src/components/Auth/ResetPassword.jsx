@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
-import { KeyRound } from "lucide-react";
+import { KeyRound , Eye, EyeOff} from "lucide-react";
 import toast from "react-hot-toast";
 import api, { getErrorMessage } from "../../api/axiosClient";
 
@@ -10,6 +10,8 @@ function ResetPassword({ email, otp, onBackToLogin }) {
   const passwordRef = useRef(null);
   const confirmPasswordRef = useRef(null);
   const [loading, setLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
+    const [confirmshowPassword, setShowconfirmPassword] = useState(false);
 
   if (!email || !otp) {
     return <Navigate to="/forgot-password" replace />;
@@ -74,12 +76,20 @@ function ResetPassword({ email, otp, onBackToLogin }) {
               <KeyRound size={18} className="shrink-0" />
               <input
                 ref={passwordRef}
-                type="password"
+                type={showPassword ? "text" : "password"}
                 placeholder="Enter new password"
                 autoComplete="new-password"
                 className="min-w-0 flex-1 bg-transparent text-white outline-none placeholder:text-slate-500"
                 required
               />
+
+                <button
+                         type="button"
+                         onClick={() => setShowPassword((prev) => !prev)}
+                         className="text-slate-400 transition-colors hover:text-white"
+                       >
+                         {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                       </button>
             </div>
           </label>
 
@@ -89,12 +99,20 @@ function ResetPassword({ email, otp, onBackToLogin }) {
               <KeyRound size={18} className="shrink-0" />
               <input
                 ref={confirmPasswordRef}
-                type="password"
+                type={confirmshowPassword ? "text" : "password"}
                 placeholder="Confirm new password"
                 autoComplete="new-password"
                 className="min-w-0 flex-1 bg-transparent text-white outline-none placeholder:text-slate-500"
                 required
               />
+
+               <button
+                         type="button"
+                         onClick={() => setShowconfirmPassword((prev) => !prev)}
+                         className="text-slate-400 transition-colors hover:text-white"
+                       >
+                         {confirmshowPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                       </button>
             </div>
           </label>
 

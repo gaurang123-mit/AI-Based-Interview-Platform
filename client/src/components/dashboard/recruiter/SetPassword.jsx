@@ -4,6 +4,7 @@ import toast from "react-hot-toast";
 import api from "../../../api/axiosClient";
 import { useAuthContext } from "../../../context/AuthContext";
 import { useRef } from "react";
+import { KeyRound , Eye, EyeOff} from "lucide-react";
 
 function SetPassword() {
   const navigate = useNavigate();
@@ -12,6 +13,8 @@ function SetPassword() {
   const confirmPasswordRef= useRef(null);
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [confirmshowPassword, setShowconfirmPassword] = useState(false);
 
 const handleSubmit = async (e) => {
   e.preventDefault();

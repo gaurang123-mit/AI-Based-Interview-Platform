@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { KeyRound, LogIn, Mail } from "lucide-react";
+import { KeyRound, LogIn, Mail, Eye, EyeOff } from "lucide-react";
 import toast from "react-hot-toast";
 import api, { getErrorMessage } from "../../api/axiosClient";
 import { useAuthContext } from "../../context/AuthContext";
@@ -12,7 +12,7 @@ function Login({ onForgotPasswordClick }) {
   const emailRef = useRef(null);
   const passwordRef = useRef(null);
   const [loading, setLoading] = useState(false);
- 
+  const [showPassword, setShowPassword] = useState(false);
 
  const handleSubmit = async (e) => {
   e.preventDefault();
@@ -122,24 +122,31 @@ function Login({ onForgotPasswordClick }) {
             </div>
           </label>
 
-        
-
- 
-          <label className="grid gap-2 text-sm font-semibold text-slate-200">
-            <span>Password</span>
-            <div className="flex min-h-12 items-center gap-3 rounded-lg border border-slate-500/30 bg-slate-950/50 px-3 text-slate-400 focus-within:border-teal-300 focus-within:ring-4 focus-within:ring-teal-500/10">
-              <KeyRound size={18} className="shrink-0" />
-              <input
-                ref={passwordRef}
-                type="password"
-                name="password"
-                placeholder="Enter password"
-                autoComplete="current-password"
-                className="min-w-0 flex-1 bg-transparent text-white outline-none placeholder:text-slate-500"
-                required
-              />
-            </div>
-          </label>
+                   <label className="grid gap-2 text-sm font-semibold text-slate-200">
+                     <span>Password</span>
+         
+                     <div className="flex min-h-12 items-center gap-3 rounded-lg border border-slate-500/30 bg-slate-950/50 px-3 text-slate-400 focus-within:border-teal-300 focus-within:ring-4 focus-within:ring-teal-500/10">
+                       <KeyRound size={18} className="shrink-0" />
+         
+                       <input
+                         ref={passwordRef}
+                         type={showPassword ? "text" : "password"}
+                         name="password"
+                         placeholder="Enter password"
+                         autoComplete="new-password"
+                         className="min-w-0 flex-1 bg-transparent text-white outline-none placeholder:text-slate-500"
+                         required
+                       />
+         
+                       <button
+                         type="button"
+                         onClick={() => setShowPassword((prev) => !prev)}
+                         className="text-slate-400 transition-colors hover:text-white"
+                       >
+                         {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                       </button>
+                     </div>
+                   </label>
 
           <div className="options">
 
