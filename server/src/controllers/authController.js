@@ -5,6 +5,7 @@ const crypto = require("crypto");
 const nodemailer = require("nodemailer");
 const { generateTokenAndSetCookie } = require("../utils/generateToken");
 const Admin = require("../models/Admin")
+const otpStore = new Map();
 
 const createMailTransporter = () => {
     return nodemailer.createTransport({
@@ -86,13 +87,100 @@ const getMe = async (req, res) => {
     }
 };
 
+const sendemailOtp = async (email, otp) => {
+    if (process.env.EMAIL_DEBUG_OTP === "true") {
+        return;
+    }
 
+    const transporter = createMailTransporter();
+
+    await transporter.sendMail({
+        from: process.env.EMAIL_FROM || process.env.EMAIL_USER,
+        to: email,
+        subject: "Password reset OTP",
+        text: `Your password reset OTP is ${otp}. It will expire in 10 minutes.`
+    });
+};
+
+const emailVerify = async (req, res) => {
+    try {
+        const { email } = req.body;
+
+        if (!email) {
+            return res.status(400).json({ message: "Email is required" });
+        }
+        const existingUser = await Admin.findOne({ email: email.toLowerCase().trim() });
+        const existingCandidate = await User.findOne({ email: email.toLowerCase().trim() });
+        if (existingUser || existingCandidate) {
+            return res.status(409).json({
+                message: "The user with this email is already registered"
+            });
+        }
+
+        const normalizedEmail = email.toLowerCase().trim();
+        const otp = crypto.randomInt(100000, 1000000).toString();
+
+        otpStore.set(normalizedEmail, {
+    otp,
+    expiresAt: Date.now() + 10 * 60 * 1000 
+});
+
+        try {
+            await sendemailOtp(normalizedEmail, otp);
+        } catch (mailError) {
+            if (mailError.code === "EAUTH" || mailError.responseCode === 535) {
+                return res.status(500).json({
+                    message: "Gmail rejected the email login. Use a Gmail App Password."
+                });
+            }
+            throw mailError;
+        }
+
+
+        res.status(200).json({
+            message: "OTP sent to your registered email"
+        });
+
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+const otpVerify = async (req, res) => {
+    try{
+        const { email,otp } = req.body;
+         if (!otp || !email) {
+            return res.status(400).json({ message: "otp and email are required" });
+        }
+
+        const normalizedEmail = email.toLowerCase().trim();
+        const storedData = otpStore.get(normalizedEmail);
+
+        if (!storedData) {
+            return res.status(400).json({ message: "No OTP found for this email" });
+        }
+        
+        if (Date.now() > storedData.expiresAt) {
+            otpStore.delete(normalizedEmail);
+            return res.status(400).json({ message: "OTP has expired" });
+        }
+        if (storedData.otp !== otp) {
+            return res.status(400).json({ message: "Invalid OTP" });
+        }
+
+        otpStore.delete(normalizedEmail);
+        res.status(200).json({ message: "OTP verified successfully" });
+
+
+    }catch(error){
+ res.status(500).json({ message: error.message });
+    }
+}
 // registration
 const registerUser = async (req, res) => {
     try {
 
         const { name, email, password } = req.body;
-
 
         if (!name || !email || !password) {
             return res.status(400).json({
@@ -108,7 +196,7 @@ const registerUser = async (req, res) => {
         const candidate = await User.findOne({
                  email: normalizedEmail 
         })
-
+        
         const existingUser = admin || recruiter || candidate;
 
         if (existingUser) {
@@ -128,7 +216,9 @@ const registerUser = async (req, res) => {
             password: hashedPassword,
             role: "candidate",
         });
+
         generateTokenAndSetCookie(user, res);
+
         res.status(201).json({
             message: "User registered successfully",
             user: formatUserResponse(user),
@@ -401,5 +491,7 @@ module.exports = {
     forgotPassword,
     verifyOtp,
     resetPassword,
+    emailVerify,
+    otpVerify,
     getMe
 };

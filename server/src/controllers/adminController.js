@@ -30,6 +30,12 @@ const addRecruiter = async(req,res) =>{
 
     const {name , email} = req.body;
 
+    if(!name || !email){
+      return res.status(400).json({
+        message:"please provide name and email"
+      })
+    }
+
     const emailExist = await Admin.findOne({email})
 
     if(emailExist){
