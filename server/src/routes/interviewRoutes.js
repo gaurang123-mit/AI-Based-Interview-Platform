@@ -7,6 +7,7 @@ const {
 startInterview,
   getNextQuestion,
   saveAnswer,
+  interview_violation,
   submitInterview,
   getResult,
   uploadRecording
@@ -22,9 +23,12 @@ router.get ('/:id/question',authMiddleware, roleMiddleware('candidate'), getNext
 
 router.post('/:id/answer',authMiddleware, roleMiddleware('candidate'), saveAnswer);
 
+router.post("/interview-violation",authMiddleware,roleMiddleware("candidate"),interview_violation);
+
 router.post('/:id/submit',authMiddleware, roleMiddleware('candidate'), submitInterview);
 
 router.get ('/:interviewId/result',authMiddleware,roleMiddleware("recruiter"), getResult);
+
 
 
 module.exports = router;

@@ -1,20 +1,34 @@
 import { useEffect, useRef } from "react";
 
-export const useTabSwitchGuard = ({ enabled = true, onViolation }) => {
-  const handledRef = useRef(false);
+export const useTabSwitchGuard = ({
+  enabled = true,
+  maxViolations = 3,
+  onWarning,
+  onViolation,
+}) => {
+  const violationCountRef = useRef(0);
 
   useEffect(() => {
-    if (!enabled) {
-      return undefined;
-    }
+    if (!enabled) return;
 
     const handleViolation = (reason) => {
-      if (handledRef.current) {
+      violationCountRef.current++;
+
+      const count = violationCountRef.current;
+
+      if (count < maxViolations) {
+        onWarning?.({
+          count,
+          remaining: maxViolations - count,
+          reason,
+        });
         return;
       }
 
-      handledRef.current = true;
-      onViolation?.(reason);
+      onViolation?.({
+        count,
+        reason,
+      });
     };
 
     const handleVisibilityChange = () => {
@@ -24,7 +38,7 @@ export const useTabSwitchGuard = ({ enabled = true, onViolation }) => {
     };
 
     const handleWindowBlur = () => {
-      window.setTimeout(() => {
+      setTimeout(() => {
         if (document.visibilityState === "hidden") {
           handleViolation("window-blur");
         }
@@ -35,8 +49,11 @@ export const useTabSwitchGuard = ({ enabled = true, onViolation }) => {
     window.addEventListener("blur", handleWindowBlur);
 
     return () => {
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      document.removeEventListener(
+        "visibilitychange",
+        handleVisibilityChange
+      );
       window.removeEventListener("blur", handleWindowBlur);
     };
-  }, [enabled, onViolation]);
+  }, [enabled, maxViolations, onWarning, onViolation]);
 };

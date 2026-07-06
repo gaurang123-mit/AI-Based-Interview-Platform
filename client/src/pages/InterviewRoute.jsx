@@ -4,6 +4,7 @@ import { useAuthContext } from "../context/AuthContext";
 
 const InterviewRoute = () => {
   const { interviewId } = useParams();
+  
   const { authUser } = useAuthContext();
 
   if (authUser?.role?.toLowerCase() !== "candidate") {

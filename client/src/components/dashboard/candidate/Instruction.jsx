@@ -1,8 +1,10 @@
 import { Camera, Clock, Mic, RefreshCcw } from "lucide-react";
 import toast from "react-hot-toast";
 import api from "../../../api/axiosClient";
+import { useState } from "react";
 
-export default function InstructionPage({ post, onBack, onStart }) {
+
+export default function InstructionPage({post, onBack, onStart }) {
   const rules = [
     {
       icon: Clock,

@@ -6,13 +6,16 @@ const cloudinary = require("../config/cloudinary")
 const fs = require("fs")
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 const AIUsage = require("../models/AIUsage");
-
+const Admin = require("../models/Admin")
+const {createMailTransporter} = require("../controllers/authController")
+let postidforviolation = ""
 // ── Start Interview + Generate All Questions ───────────────────
 const startInterview = async (req, res) => {
   try {
 
     const { jobRole, jobDescription, skills, difficulty, numberOfQuestions, postId} = req.body;
     const candidateId = req.user.id;
+    postidforviolation = postId
     // generate all questions at once
     const prompt = `You are conducting a ${difficulty} level job interview for the role of ${jobRole}.
     Job description: ${jobDescription}
@@ -55,7 +58,6 @@ const startInterview = async (req, res) => {
 
           
 
-      console.log("Question Generation:", response.usage);
       
       let raw       = response.choices[0].message.content.trim();
       raw = raw
@@ -151,7 +153,7 @@ const uploadRecording = async (req, res) => {
     fs.unlink(req.file.path, (err) => {
   if (err) console.error(err);
   });
-console.log("Cloudinary Upload Result:", result);
+
     res.status(200).json({
       success: true,
       recordingUrl: result.secure_url,
@@ -189,6 +191,42 @@ const saveAnswer = async (req, res) => {
     res.status(500).json({ success: false, message: err.message });
   }
 };
+
+
+
+const interview_violation = async (req, res) => {
+  const { isviolated } = req.body
+
+  try {
+    const post = await InterviewPost.findById(postidforviolation).select("candidateEmail  postedBy")
+    const candidate_email = post.candidateEmail
+    const cur_email = await Admin.findById(post.postedBy).select("email")
+    await InterviewPost.findByIdAndDelete(postidforviolation)
+
+    const transporter = createMailTransporter();
+
+    await transporter.sendMail({
+      from: process.env.EMAIL_FROM || process.env.EMAIL_USER,
+      to: cur_email,
+      subject: "interview rules violation notification",
+      text: `the candidate with email : ${candidate_email}
+       has violated the interview rules by switching tabs multiple times, 
+       and the interview post and interview has been terminated.`
+    });
+ 
+    return res.status(201).json({
+      message: "the violation action done"
+    })
+
+  }
+  catch (err) {
+      res.status(500).json({
+        message:`something went wrong :${err}`
+      })
+  }
+
+}
+
 
 // ── Submit & Evaluate ──────────────────────────────────────────
 const submitInterview = async (req, res) => {
@@ -358,6 +396,7 @@ module.exports = {
   startInterview,
   getNextQuestion,
   saveAnswer,
+  interview_violation,
   submitInterview,
   getResult,
   uploadRecording

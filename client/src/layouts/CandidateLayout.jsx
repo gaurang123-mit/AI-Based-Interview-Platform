@@ -34,6 +34,7 @@ const CandidateLayout = ({ onLogout, user }) => {
         onBack={() => setSelectedPost(null)}
         onStart={(interviewId) => navigate(`/interview/${interviewId}`)} 
       />
+      
     );
   }
   return <CandidateDashboard onAttend={(post) => setSelectedPost(post)} />;

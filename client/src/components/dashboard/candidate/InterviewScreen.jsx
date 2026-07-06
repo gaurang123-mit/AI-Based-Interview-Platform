@@ -63,10 +63,37 @@ export default function InterviewScreen({ interviewId }) {
     [cleanupSession, navigate]
   );
 
-  useTabSwitchGuard({
-    enabled: !showSuccessModal,
-    onViolation: handleMalpractice,
-  });
+useTabSwitchGuard({
+  enabled: true,
+  maxViolations: 3,
+
+  onWarning: ({ count, remaining }) => {
+    toast.error(
+      `Warning : Please do not switch tabs, the session is monitored.`
+    );
+  },
+
+  onViolation: async () => {
+    try {
+      await api.post("/interview/interview-violation", {
+        isviolated: true,
+      });
+
+      toast.error(
+        "Interview terminated because you switched tabs multiple times."
+      );
+
+      // Navigate away
+      navigate("/");
+    setTimeout(() => {
+      window.location.reload()
+    }, 2000);
+
+    } catch (err) {
+      console.error(err);
+    }
+  },
+});
 
   const fetchQuestion = useCallback(async () => {
     setLoading(true);

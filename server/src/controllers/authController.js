@@ -401,5 +401,6 @@ module.exports = {
     forgotPassword,
     verifyOtp,
     resetPassword,
-    getMe
+    getMe,
+    createMailTransporter
 };
