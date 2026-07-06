@@ -71,6 +71,9 @@ function Login({ onForgotPasswordClick }) {
     onForgotPasswordClick(email);
   };
 
+
+  
+
   return (
     <main className="relative z-10 mx-auto grid min-h-screen w-[min(1120px,calc(100%-32px))] grid-cols-1 items-center gap-7 py-8 md:grid-cols-[minmax(0,1fr)_minmax(360px,440px)] md:gap-12 md:py-12">
       <section className="max-w-xl" aria-label="Interview platform overview">
