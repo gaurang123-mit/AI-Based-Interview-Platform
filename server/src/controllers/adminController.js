@@ -1,7 +1,10 @@
 const AIUsage = require("../models/AIUsage");
 const User = require("../models/User");
 const Admin = require("../models/Admin")
+const Resume = require("../models/Resume")
 const bcrypt = require("bcryptjs")
+const cloudinary  = require("../config/cloudinary")
+const {getPublicId} = require("./recruiterController")
 const getCandidates = async (req, res) => {
   try {
     const candidates = await User.find({ role: "candidate" })
@@ -83,9 +86,29 @@ const deleteRecruiter = async (req, res) => {
   }
 };
 
+
 const deleteCandidate = async (req, res) => {
   try {
     const { id } = req.params;
+
+    const resumes = await Resume.find({candidate:id}).select("resumeUrl")
+      
+     await Promise.all(
+  resumes.map(async (resume) => {
+    try {
+      const publicId = getPublicId(resume.resumeUrl);
+
+      const response = await cloudinary.uploader.destroy(publicId, {
+        resource_type: "raw",
+      });
+
+      console.log(response);
+    } catch (err) {
+      console.error(err);
+    }
+  })
+);
+    await Resume.deleteMany({ candidate: id });
 
     const candidate = await User.findOneAndDelete({
       _id: id,
@@ -113,11 +136,10 @@ const getAIAnalytics = async (req, res) => {
 
     }
 
-    const COST_PER_1M_TOKENS = 6.25; // Approx GPT-4o average cost
-    // console.log("analytics:",analytics)
-    // console.log("a:",a)
+    const COST_PER_1M_TOKENS = 6.25;
+
   const estimatedCost = (analytics.totalTokens / 1_000_000) * COST_PER_1M_TOKENS;
-  // console.log("cost:",estimatedCost)
+
 
     if (!analytics) {
       return res.status(404).json({
