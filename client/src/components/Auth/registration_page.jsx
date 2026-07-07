@@ -125,6 +125,7 @@ function RegistrationPage() {
             <div className="flex min-h-12 items-center gap-3 rounded-lg border border-slate-500/30 bg-slate-950/50 px-3 text-slate-400 focus-within:border-teal-300 focus-within:ring-4 focus-within:ring-teal-500/10">
               <UserPlus size={18} className="shrink-0" />
               <input
+              required
                 ref={nameRef}
                 type="text"
                 name="name"

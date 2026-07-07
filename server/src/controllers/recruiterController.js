@@ -158,5 +158,4 @@ module.exports = {
   getPerformance,
   Deleteresults,
   setpassword,
-  getPublicId
 };

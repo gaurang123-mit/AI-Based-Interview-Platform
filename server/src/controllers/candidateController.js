@@ -11,6 +11,7 @@ const ai = require("../config/gemini");
 const cloudinary = require("../config/cloudinary")
 const OpenAI  = require("openai")
 const AIUsage = require("../models/AIUsage");
+const Admin  = require("../models/Admin")
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
@@ -126,6 +127,7 @@ const resume = await Resume.create({
      extractedText
      });
 
+    console.log("the public id in upload:", uploadResult.public_id)
 
     // generating the response from the llm by providing the extracted content
         const prompt = `
@@ -136,8 +138,6 @@ Extract information from the resume text and return ONLY valid JSON.
 Schema:
 
 {
-  "name": "",
-  "email":"",
   "skills": [],
   "education": [
             {
@@ -210,6 +210,11 @@ try {
     profileData =
         JSON.parse(jsonText);
 
+    personal_info = await User.findById(req.user.id).select("name email")
+    console.log("the info:", personal_info)
+    profileData.name = personal_info.name
+    profileData.email = personal_info.email
+    console.log("the profile data:", profileData)
 } catch (error) {
 
     console.error(
@@ -260,10 +265,12 @@ const saveProfile = async (req, res) => {
 
     // Check if email is already taken by another user
     if (email) {
-      const emailExists = await User.findOne({
+        const recruiter = await Admin.findOne({email})
+        const user = await User.findOne({
         email,
         _id: { $ne: req.user.id }, // $ne = not equal — exclude current user
       });
+      const emailExists = recruiter || user;
 
       if (emailExists) {
         return res.status(400).json({ message: "Email is already in use by another account." });

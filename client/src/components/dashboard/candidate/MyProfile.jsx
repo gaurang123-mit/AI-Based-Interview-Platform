@@ -326,6 +326,7 @@ projects: profileData.projects,
         <div className="grid md:grid-cols-2 gap-4">
 
           <input
+          required
             type="text"
             placeholder="Full Name"
             value={profileData.name}
@@ -339,6 +340,7 @@ projects: profileData.projects,
           />
 
           <input
+          required
             type="email"
             placeholder="Email"
             value={profileData.email}
