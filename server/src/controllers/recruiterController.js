@@ -6,6 +6,7 @@ const Admin = require("../models/Admin");
 const bcrypt = require("bcryptjs")
 const Interviewpost = require("../models/interviewpost")
 const createMailTransporter = require("./authController")
+const cloudinary  = require("../config/cloudinary")
 
 
 // controllers/userController.js
@@ -64,22 +65,63 @@ function getPublicId(videoUrl) {
 }
 
 const Deleteresults = async (req, res) => {
-
   try {
-    const interviewid = await Result.findOne({ _id: req.params.resultID }).select("interviewId")
-    const recruiterId = await InterviewPost.findOne({ _id: interviewid.interviewId }).select("recruiterId")
-    if (recruiterId.recruiterId.toString() === req.user.id.toString()) {
+    const result = await Result.findById(req.params.resultID)
+      .select("interviewId questions")
+      .lean();
 
-      await Result.findOneAndDelete({ _id: req.params.resultID })
-      res.status(200).json({
-        message: "the result has been deleted",
-      })
+    if (!result) {
+      return res.status(404).json({
+        message: "Result not found",
+      });
     }
-  } catch (err) {
-    res.status(500).json({ message: "server error" })
-  }
-}
 
+    const interview = await InterviewPost.findById(result.interviewId)
+      .select("recruiterId")
+      .lean();
+
+    if (!interview) {
+      return res.status(404).json({
+        message: "Interview not found",
+      });
+    }
+
+    if (interview.recruiterId.toString() !== req.user.id.toString()) {
+      return res.status(403).json({
+        message: "Unauthorized",
+      });
+    }
+
+    // Delete all Cloudinary videos in parallel
+    await Promise.all(
+      result.questions
+        .filter((q) => q.recordingUrl)
+        .map(async (q) => {
+          try {
+            const publicId = getPublicId(q.recordingUrl);
+
+            await cloudinary.uploader.destroy(publicId, {
+              resource_type: "video",
+            });
+          } catch (err) {
+            console.error(`Failed to delete ${q.recordingUrl}`, err);
+          }
+        })
+    );
+
+    await Result.findByIdAndDelete(req.params.resultID);
+
+    return res.status(200).json({
+      message: "Result deleted successfully",
+    });
+  } catch (err) {
+    console.error(err);
+
+    return res.status(500).json({
+      message: "Server error",
+    });
+  }
+};
 
 const setpassword = async (req, res) => {
   const { password } = req.body;
@@ -108,10 +150,7 @@ const setpassword = async (req, res) => {
     });
   }
 
-
 }
-
-
 
 
 module.exports = {
@@ -119,4 +158,5 @@ module.exports = {
   getPerformance,
   Deleteresults,
   setpassword,
+  getPublicId
 };

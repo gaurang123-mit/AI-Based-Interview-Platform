@@ -17,7 +17,7 @@ const createMailTransporter = () => {
     });
 };
 
-const sendPasswordResetOtp = async (user, otp) => {
+const sendOtp = async (email, otp) => {
     if (process.env.EMAIL_DEBUG_OTP === "true") {
         return;
     }
@@ -26,7 +26,7 @@ const sendPasswordResetOtp = async (user, otp) => {
 
     await transporter.sendMail({
         from: process.env.EMAIL_FROM || process.env.EMAIL_USER,
-        to: user.email,
+        to: email,
         subject: "Password reset OTP",
         text: `Your password reset OTP is ${otp}. It will expire in 10 minutes.`
     });
@@ -87,21 +87,6 @@ const getMe = async (req, res) => {
     }
 };
 
-const sendemailOtp = async (email, otp) => {
-    if (process.env.EMAIL_DEBUG_OTP === "true") {
-        return;
-    }
-
-    const transporter = createMailTransporter();
-
-    await transporter.sendMail({
-        from: process.env.EMAIL_FROM || process.env.EMAIL_USER,
-        to: email,
-        subject: "Password reset OTP",
-        text: `Your password reset OTP is ${otp}. It will expire in 10 minutes.`
-    });
-};
-
 const emailVerify = async (req, res) => {
     try {
         const { email } = req.body;
@@ -126,14 +111,14 @@ const emailVerify = async (req, res) => {
 });
 
         try {
-            await sendemailOtp(normalizedEmail, otp);
+            await sendOtp(normalizedEmail, otp);
         } catch (mailError) {
             if (mailError.code === "EAUTH" || mailError.responseCode === 535) {
                 return res.status(500).json({
                     message: "Gmail rejected the email login. Use a Gmail App Password."
                 });
             }
-            throw mailError;
+            
         }
 
 
@@ -275,7 +260,6 @@ const loginUser = async (req, res) => {
             return res.status(200).json({
                 message: "Recruiter logged in successfully",
                 user:formatUserResponse(recruiter),
-                // passwordChanged: recruiter.passwordChanged
 
             });
 
@@ -339,7 +323,7 @@ const forgotPassword = async (req, res) => {
 
 
         try {
-            await sendPasswordResetOtp(cur_user, otp);
+            await sendOtp(cur_user.email, otp);
         } catch (mailError) {
             if (mailError.code === "EAUTH" || mailError.responseCode === 535) {
                 return res.status(500).json({

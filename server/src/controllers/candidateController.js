@@ -183,7 +183,7 @@ ${extractedText}
         model:    'gpt-4o',
         messages: [{ role: 'user', content: prompt }],
       });
-      console.log("AI response:",response)
+      
       let raw= response.choices[0].message.content;
 
       await AIUsage.findOneAndUpdate(
