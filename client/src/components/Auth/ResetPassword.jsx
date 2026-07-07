@@ -17,17 +17,28 @@ function ResetPassword({ email, otp, onBackToLogin }) {
     return <Navigate to="/forgot-password" replace />;
   }
 
+  const validatePassword = (password) => {
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+    return passwordRegex.test(password);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     const password = passwordRef.current?.value || "";
     const confirmPassword = confirmPasswordRef.current?.value || "";
 
-    if (password !== confirmPassword) {
-      toast.error("Passwords do not match.");
+    if (!validatePassword(password)){
+      toast.error(
+        "Password must be at least 8 characters long and contain one uppercase letter, one lowercase letter, one number, and one special character."
+      );
       return;
     }
-
+    
+    if (password !== confirmPassword){
+      toast.error("Passwords do not match.");
+    }
     setLoading(true);
 
     try {
@@ -115,6 +126,18 @@ function ResetPassword({ email, otp, onBackToLogin }) {
                        </button>
             </div>
           </label>
+
+<p className="text-xs text-slate-400">
+  Password must contain:
+</p>
+
+<ul className="ml-5 list-disc text-xs text-slate-400">
+  <li>Minimum 8 characters</li>
+  <li>One uppercase letter</li>
+  <li>One lowercase letter</li>
+  <li>One number</li>
+  <li>One special character (@$!%*?&)</li>
+</ul>
 
           <button
             type="submit"

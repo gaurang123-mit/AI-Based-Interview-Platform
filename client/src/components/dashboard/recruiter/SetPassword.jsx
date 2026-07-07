@@ -16,17 +16,30 @@ function SetPassword() {
   const [showPassword, setShowPassword] = useState(false);
   const [confirmshowPassword, setShowconfirmPassword] = useState(false);
 
-const handleSubmit = async (e) => {
+const validatePassword = (password) => {
+  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+  return passwordRegex.test(password);
+}
+
+  const handleSubmit = async (e) => {
   e.preventDefault();
   setMessage("");
 
   const newPassword = newPasswordRef.current?.value || "";
   const confirmPassword = confirmPasswordRef.current?.value || "";
+  const validationError = validatePassword(newPassword);
+
+    if (!validatePassword(newPassword)) {
+      setMessage(
+        "Password must be at least 8 characters long and contain one uppercase letter, one lowercase letter, one number, and one special character."
+      );
+      return;
+    }
 
   if (newPassword !== confirmPassword) {
     setMessage("Passwords do not match.");
     return;
-  }
+}
 
   setLoading(true);
 
@@ -93,11 +106,17 @@ const handleSubmit = async (e) => {
           />
         </div>
 
-        {message && (
-          <p className="rounded-md bg-red-500/10 px-3 py-2 text-center text-sm text-red-400">
-            {message}
-          </p>
-        )}
+          {message && (
+      <>
+        <p className="rounded-md bg-red-500/10 px-3 py-2 text-center text-sm text-red-400">
+          {message}
+        </p>
+
+        <p className="text-xs text-slate-400">
+          
+        </p>
+      </>
+    )}
 
         <button
           type="submit"
