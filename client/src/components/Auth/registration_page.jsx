@@ -18,6 +18,14 @@ function RegistrationPage() {
   const [isEmailVerified, setIsEmailVerified] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
+  const validatePassword = (password) => {
+    const PasswordRegex =
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+    return PasswordRegex.test(password);
+  };
+
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -33,6 +41,11 @@ function RegistrationPage() {
 
     if (!payload.name || !payload.email || !payload.password) {
       toast.error("Please complete all registration fields.");
+      return;
+    }
+
+    if (!validatePassword(payload.password)){
+      toast.error("Password must be at least 8 characters long and contain one uppercase letter, one lowercase letter, one number, and one special character.");
       return;
     }
 
@@ -151,6 +164,8 @@ function RegistrationPage() {
                 required
               />
             </div>
+
+                      
           </label>
 
           {isEmailVerified ? (
@@ -204,6 +219,8 @@ function RegistrationPage() {
                 className="min-w-0 flex-1 bg-transparent text-white outline-none placeholder:text-slate-500"
                 required
               />
+
+              
 
               <button
                 type="button"
