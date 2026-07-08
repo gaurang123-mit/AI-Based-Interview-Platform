@@ -83,7 +83,7 @@ const renderContent = () => {
 
           <button
             onClick={() => setIsProfileOpen(!isProfileOpen)}
-            className="flex items-center gap-2 bg-slate-800/40 hover:bg-slate-800/80 border border-slate-700/50 rounded-full pl-1 pr-3 py-1"
+            className="flex items-center gap-3 bg-slate-800/40 hover:bg-slate-800/80 border border-slate-700/50 rounded-full  pl-5 pr-6 py-4"
           >
             <span className="hidden sm:block text-white text-xs font-medium max-w-28 truncate">
               {user?.name || "Recruiter"}
