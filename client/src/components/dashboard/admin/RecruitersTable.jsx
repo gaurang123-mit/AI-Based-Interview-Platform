@@ -224,7 +224,7 @@ const RecruitersTable = () => {
               className="cursor-pointer w-fit border-0 bg-transparent text-sm font-bold text-teal-300 hover:text-teal-200"
               onClick={handleVerifyEmail}
             >
-              Verify Email
+              Send OTP
             </button>
           )}
 
