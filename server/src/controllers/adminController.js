@@ -2,6 +2,7 @@ const AIUsage = require("../models/AIUsage");
 const User = require("../models/User");
 const Admin = require("../models/Admin")
 const Resume = require("../models/Resume")
+const InterviewPost = require("../models/interviewpost")
 const bcrypt = require("bcryptjs")
 const cloudinary = require("../config/cloudinary")
 const { createMailTransporter } = require("./authController")
@@ -166,7 +167,7 @@ const getAIAnalytics = async (req, res) => {
       a = 2;
 
     }
-
+    const totalInterviews = await InterviewPost.countDocuments();
     const COST_PER_1M_TOKENS = 6.25;
 
     const estimatedCost = (analytics.totalTokens / 1_000_000) * COST_PER_1M_TOKENS;
@@ -190,6 +191,7 @@ const getAIAnalytics = async (req, res) => {
       questionTokens: analytics.questionTokens,
       resumeTokens: analytics.resumeTokens,
       evaluationTokens: analytics.evaluationTokens,
+      totalInterviews:totalInterviews,
       summaryTokens: analytics.summaryTokens,
       totalTokens: analytics.totalTokens,
       estimatedCost: estimatedCost.toFixed(2)
