@@ -6,6 +6,7 @@ const SearchCandidates = () => {
   const [results, setResults]             = useState([]);
   const [loading, setLoading]             = useState(true);
   const [error, setError]                 = useState("");
+  const[selectCandidate, setSelectCandidate] = useState(null);
   const [filters, setFilters]             = useState({
     name:     "",
     skill:    "",
@@ -112,6 +113,7 @@ const SearchCandidates = () => {
           onChange={handleChange}
           placeholder="Min experiences count"
           type="number"
+          min={0}
           className="p-2 bg-slate-800 rounded outline-none"
         />
       </div>
@@ -145,86 +147,134 @@ const SearchCandidates = () => {
           results.map((c, i) => (
             <div
               key={c._id || i}
-              className="bg-slate-900 p-4 rounded-xl border border-slate-700"
-            >
-              {/* Name + profile badge */}
-              <div className="flex items-center justify-between mb-1">
-                <h2 className="text-lg font-semibold">{c.name || "N/A"}</h2>
-                {c.profileCompleted && (
-                  <span className="text-xs bg-emerald-900 text-emerald-300 px-2 py-0.5 rounded-full">
-                    Profile Complete
-                  </span>
+              className="bg-slate-900 p-4 rounded-xl border border-slate-700 flex flex-col min-h-[140px]"
+              onClick={() => setSelectCandidate(c)}
+              >
+            <div className="flex items-center justify-between mb-1">
+            <h2 className="text-lg font-semibold">{c.name || "N/A"}</h2>
+
+            {c.profileCompleted && (
+                <span className="text-xs bg-emerald-900 text-emerald-300 px-2 py-0.5 rounded-full">
+                     Profile Complete
+                </span>
+          )}
+            </div>
+
+          <p className="text-sm text-gray-400">{c.email}</p>
+
+        <div
+          className="mt-auto self-end text-blue-500 hover:text-blue-400 cursor-pointer font-medium transition-colors"
+          onClick={() => setSelectCandidate(c)}
+        >
+             View Profile
+        </div>
+      </div>  
+            
+          ))
+          
+        )}
+        </div>
+
+        {selectCandidate && (
+  <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+    <div className="bg-slate-900 border border-slate-700 rounded-xl p-6 w-full max-w-3xl max-h-[90vh] overflow-y-auto relative">
+      <button
+        onClick={() => setSelectCandidate(null)}
+        className="absolute top-4 right-4 flex h-10 w-10 items-center justify-center rounded-full bg-slate-800 text-gray-400 transition-all duration-200 hover:bg-red-600 hover:text-white hover:scale-110 active:scale-95 shadow-lg"
+      >
+        ✕
+      </button>
+
+      {/* Header */}
+      <div className="mb-6">
+        <div className="flex items-center justify-between">
+          <h2 className="text-2xl font-bold">
+            {selectCandidate.name || "N/A"}
+          </h2>
+        </div>
+        <p className="text-gray-400 mt-1">{selectCandidate.email}</p>
+      </div>
+
+      {/* Skills */}
+      {selectCandidate.skills?.length > 0 && (
+        <div className="mb-5">
+          <h3 className="font-semibold mb-2">Skills</h3>
+
+          <div className="flex flex-wrap gap-2">
+            {selectCandidate.skills.map((skill, i) => (
+              <span
+                key={i}
+                className="bg-slate-700 px-3 py-1 rounded-full text-sm"
+              >
+                {skill}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Experience */}
+      {selectCandidate.experience?.length > 0 && (
+        <div className="mb-5">
+          <h3 className="font-semibold mb-3">Experience</h3>
+
+          <div className="space-y-4">
+            {selectCandidate.experience.map((exp, i) => (
+              <div
+                key={i}
+                className="border-l-2 border-slate-700 pl-4"
+              >
+                <p className="font-medium">
+                  {exp.designation}
+                  {exp.company && ` @ ${exp.company}`}
+                </p>
+
+                {exp.dates && (
+                  <p className="text-xs text-gray-500">{exp.dates}</p>
+                )}
+
+                {exp.description?.length > 0 && (
+                  <ul className="list-disc list-inside mt-2 text-gray-300">
+                    {exp.description.map((line, j) => (
+                      <li key={j}>{line}</li>
+                    ))}
+                  </ul>
                 )}
               </div>
+            ))}
+          </div>
+        </div>
+      )}
 
-              <p className="text-sm text-gray-400 mb-2">{c.email}</p>
+      {/* Education */}
+      {selectCandidate.education?.length > 0 && (
+        <div>
+          <h3 className="font-semibold mb-3">Education</h3>
 
-              {/* Skills */}
-              {c.skills?.length > 0 && (
-                <div className="flex flex-wrap gap-1 mb-2">
-                  {c.skills.map((skill, j) => (
-                    <span
-                      key={j}
-                      className="text-xs bg-slate-700 text-slate-300 px-2 py-0.5 rounded-full"
-                    >
-                      {skill}
-                    </span>
-                  ))}
-                </div>
-              )}
+          <div className="space-y-4">
+            {selectCandidate.education.map((edu, i) => (
+              <div
+                key={i}
+                className="border-l-2 border-slate-700 pl-4"
+              >
+                <p className="font-medium">
+                  {edu.degree}
+                  {edu.institution && ` — ${edu.institution}`}
+                </p>
 
-              {/* Experience */}
-              {c.experience?.length > 0 && (
-                <div className="mb-2">
-                  <p className="text-sm font-medium mb-1">Experience:</p>
-                  <ul className="text-sm text-slate-400 space-y-2">
-                    {c.experience.map((exp, j) => (
-                      <li key={j} className="border-l-2 border-slate-700 pl-2">
-                        <p className="text-slate-300 font-medium">
-                          {exp.designation}
-                          {exp.company ? ` @ ${exp.company}` : ""}
-                        </p>
-                        {exp.dates && (
-                          <p className="text-xs text-slate-500">{exp.dates}</p>
-                        )}
-                        {exp.description?.length > 0 && (
-                          <ul className="list-disc list-inside mt-1">
-                            {exp.description.map((line, k) => (
-                              <li key={k}>{line}</li>
-                            ))}
-                          </ul>
-                        )}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {/* Education */}
-              {c.education?.length > 0 && (
-                <div>
-                  <p className="text-sm font-medium mb-1">Education:</p>
-                  <ul className="text-sm text-slate-400 space-y-2">
-                    {c.education.map((edu, j) => (
-                      <li key={j} className="border-l-2 border-slate-700 pl-2">
-                        <p className="text-slate-300 font-medium">
-                          {edu.degree}
-                          {edu.institution ? ` — ${edu.institution}` : ""}
-                        </p>
-                        <p className="text-xs text-slate-500">
-                          {[edu.years, edu.location, edu.gpa && `GPA: ${edu.gpa}`]
-                            .filter(Boolean)
-                            .join(" · ")}
-                        </p>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </div>
-          ))
-        )}
-      </div>
+                <p className="text-sm text-gray-400">
+                  {[edu.years, edu.location, edu.gpa && `GPA: ${edu.gpa}`]
+                    .filter(Boolean)
+                    .join(" · ")}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  </div>
+)}
     </div>
   );
 };

@@ -217,17 +217,30 @@ const handleResumeUpload = async (e) => {
   const handleSaveProfile = async () => {
   setSaveError("");
   setSaveSuccess("");
+  if (!profileData.name.trim()|| 
+      !profileData.email.trim()||
+      profileData.skills.length === 0 || 
+      !profileData.projects[0].title.trim()||
+      profileData.projects[0].technologies.length === 0 ||
+      !profileData.projects[0].description.trim() || 
+      !profileData.education[0].institution.trim() || 
+      !profileData.education[0].degree.trim() || 
+      !profileData.education[0].years.trim() ||
+      !profileData.education[0].location.trim() ||
+      !profileData.education[0].gpa.trim()) {
+    return setSaveError(`Please fill in all required fields marked with an asterisk (*).`);
+  }
   try {
     await api.post(
       "/candidate/profile",
       {
-        name:             profileData.name,
-        email:            profileData.email,
-        skills:           profileData.skills,
-       education: profileData.education,
-experience: profileData.experience,
-projects: profileData.projects,
-        certifications:   profileData.certifications,
+        name:profileData.name,
+        email:profileData.email,
+        skills:profileData.skills,
+        education:profileData.education,
+        experience:profileData.experience,
+        projects:profileData.projects,
+        certifications:profileData.certifications,
         profileCompleted: true,
       },
     );
@@ -321,6 +334,7 @@ projects: profileData.projects,
       <div className="bg-slate-900/40 border border-slate-800 rounded-xl p-6">
         <h2 className="text-xl font-semibold text-white mb-4">
           Personal Details
+          <span className="text-red-500 ml-2">*</span>
         </h2>
 
         <div className="grid md:grid-cols-2 gap-4">
@@ -361,9 +375,11 @@ projects: profileData.projects,
       <div className="bg-slate-900/40 border border-slate-800 rounded-xl p-6">
         <h2 className="text-xl font-semibold text-white mb-4">
           Skills
+          <span className="text-red-500 ml-2">*</span>
         </h2>
 
         <textarea
+          required
           rows="4"
           placeholder="React, Node.js, Python, AWS, Docker"
           value={formatArrayForInput(profileData.skills)}
@@ -486,6 +502,7 @@ projects: profileData.projects,
 
   <h2 className="text-xl font-semibold text-white mb-4">
     Projects
+    <span className="text-red-500 ml-2">*</span>
   </h2>
 
   {profileData.projects.map((project, index) => (
@@ -495,6 +512,7 @@ projects: profileData.projects,
     >
 
       <input
+        required
         type="text"
         placeholder="Title"
         className="w-full bg-slate-800 border border-slate-700 rounded-lg p-3 text-white placeholder:text-slate-400 mb-4"
@@ -511,6 +529,7 @@ projects: profileData.projects,
       />
 
       <input
+        required
         type="text"
         placeholder="Technologies Used"
         className="w-full bg-slate-800 border border-slate-700 rounded-lg p-3 text-white placeholder:text-slate-400 mb-4"
@@ -528,6 +547,7 @@ projects: profileData.projects,
       />
 
       <textarea
+        required
         rows="4"
         placeholder="Project Description"
         className="w-full bg-slate-800 border border-slate-700 rounded-lg p-3 text-white placeholder:text-slate-400"
@@ -573,6 +593,7 @@ projects: profileData.projects,
 
   <h2 className="text-xl font-semibold text-white mb-4">
     Education
+    <span className="text-red-500 ml-2">*</span>
   </h2>
 
   {profileData.education.map((edu, index) => (
@@ -582,6 +603,7 @@ projects: profileData.projects,
     >
 
       <input
+        required
         type="text"
         placeholder="Institution"
         className="bg-slate-800 border border-slate-700 rounded-lg p-3 text-white placeholder:text-slate-400"
@@ -598,6 +620,7 @@ projects: profileData.projects,
       />
 
       <input
+        required
         type="text"
         placeholder="Degree"
         className="bg-slate-800 border border-slate-700 rounded-lg p-3 text-white placeholder:text-slate-400"
@@ -614,6 +637,7 @@ projects: profileData.projects,
       />
 
       <input
+        required
         type="text"
         placeholder="Location"
         className="bg-slate-800 border border-slate-700 rounded-lg p-3 text-white placeholder:text-slate-400"
@@ -630,6 +654,7 @@ projects: profileData.projects,
       />
 
       <input
+        required
         type="text"
         placeholder="Graduation Year"
         className="bg-slate-800 border border-slate-700 rounded-lg p-3 text-white placeholder:text-slate-400"
@@ -646,6 +671,7 @@ projects: profileData.projects,
       />
 
       <input
+        required
         type="text"
         placeholder="GPA"
         className="bg-slate-800 border border-slate-700 rounded-lg p-3 text-white placeholder:text-slate-400"

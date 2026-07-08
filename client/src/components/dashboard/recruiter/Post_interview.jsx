@@ -43,6 +43,14 @@ const PostInterview = () => {
       setErrorMsg("Please enter the job role.");
       return;
     }
+    if (!form.jd.trim()) {
+      setErrorMsg("Please enter the job description.");
+      return;
+    }
+    if (!form.skills.trim()) {
+      setErrorMsg("Please enter the required skills.");
+      return;
+    }
 
     setLoading(true);
     try {
@@ -96,38 +104,54 @@ const PostInterview = () => {
       <form onSubmit={handleSubmit} className="space-y-4">
 
         {/* ✅ Fixed: name was "Name of the round" (spaces break req.body) */}
+        <label className="mb-2 flex items-center text-sm font-medium text-slate-300">
+          Round Name :
+        </label>
         <input
+          required
           name="roundName"
           value={form.roundName}
           placeholder="Name of the round (e.g. 'Technical Round 1' or 'HR Round')"
           className="w-full h-10 px-3 bg-slate-800 rounded"
           onChange={handleChange}
         />
-
+        <label className="mb-2 flex items-center text-sm font-medium text-slate-300">
+          Job Role :
+        </label>
         <input
+          required
           name="role"
           value={form.role}
           placeholder="Job Role"
           className="w-full h-10 px-3 bg-slate-800 rounded"
           onChange={handleChange}
         />
-
+        <label className="mb-2 flex items-center text-sm font-medium text-slate-300">
+          Job Description :
+        </label>
         <textarea
+          required
           name="jd"
           value={form.jd}
           placeholder="Job Description"
           className="w-full h-48 p-3 bg-slate-800 rounded resize-none overflow-y-auto"
           onChange={handleChange}
         />
-
+        <label className="mb-2 flex items-center text-sm font-medium text-slate-300">
+          Skills :
+        </label>
         <input
+          required
           name="skills"
           value={form.skills}
           placeholder="Skills (comma separated)"
           className="w-full p-2 bg-slate-800 rounded"
           onChange={handleChange}
         />
-
+  
+        <label className="mb-2 flex items-center text-sm font-medium text-slate-300">
+          Candidate Type :
+        </label>
         <select
           name="candidateType"
           value={form.candidateType}
@@ -193,7 +217,7 @@ const PostInterview = () => {
         />
 
         <input
-        required
+          required
           name="Email"
           type="email"
           value={form.Email}
