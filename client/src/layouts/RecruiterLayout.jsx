@@ -47,7 +47,7 @@ const renderContent = () => {
 };
 
   return (
-    <div className="min-h-screen w-full text-slate-100 flex flex-col bg-[#0a0f1d] overflow-x-hidden">
+    <div className="h-screen w-full text-slate-100 flex flex-col bg-[#0a0f1d] overflow-hidden">
 
       {/* Background Glow */}
       <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-cyan-600/20 blur-[120px] pointer-events-none"></div>
@@ -169,7 +169,7 @@ const renderContent = () => {
       </div>
 
       {/* Main Layout */}
-      <div className="flex flex-1">
+      <div className="flex flex-1 min-h-0">
 
         {/* Desktop Sidebar */}
         <aside className="hidden lg:flex lg:w-72 border-r border-slate-800/60 bg-[#0c1325]/40 backdrop-blur-sm p-4 flex-col gap-4">
@@ -196,7 +196,7 @@ const renderContent = () => {
         </aside>
 
         {/* Main Content */}
-        <main className="flex-1 p-4 sm:p-6 overflow-x-hidden">
+        <main className="flex-1 p-4 sm:p-6 overflow-y-auto min-h-0">
           <div className="max-w-7xl mx-auto">
             {renderContent()}
           </div>

@@ -62,7 +62,7 @@ const CandidateLayout = ({ onLogout, user }) => {
 
   // rest of your JSX unchanged below...
   return (
-    <div className="min-h-screen w-full overflow-x-hidden text-slate-100 flex flex-col font-sans relative bg-[#0a0f1d]">
+    <div className="min-h-screen w-full overflow-hidden text-slate-100 flex flex-col font-sans relative bg-[#0a0f1d]">
       <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-indigo-600/10 blur-[120px] pointer-events-none"></div>
       <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-purple-600/20 blur-[120px] pointer-events-none"></div>
 
@@ -131,7 +131,7 @@ const CandidateLayout = ({ onLogout, user }) => {
         </>
       )}
 
-      <div className="flex flex-1 flex-col lg:flex-row min-w-0">
+      <div className="flex flex-1 flex-col lg:flex-row min-h-0">
         <aside className="hidden lg:flex lg:w-72 border-r border-slate-800/60 bg-[#0c1325]/40 backdrop-blur-sm p-3 flex-col gap-4">
           <div className="flex flex-row lg:flex-col gap-2 overflow-x-auto lg:overflow-visible">
             {resumeNavItems.map((item) => {
@@ -170,7 +170,7 @@ const CandidateLayout = ({ onLogout, user }) => {
           </div>
         </aside>
 
-        <main className="flex-1 p-4 sm:p-6 overflow-x-hidden">
+        <main className="flex-1 p-4 sm:p-6 overflow-y-auto min-h-0">
           <div className="max-w-7xl mx-auto">
             {renderPage()}
           </div>

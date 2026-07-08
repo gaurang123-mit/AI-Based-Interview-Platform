@@ -55,7 +55,7 @@ const AdminLayout = ({ user, onLogout }) => {
   };
 
   return (
-    <div className="min-h-screen w-full overflow-x-hidden text-slate-100 flex flex-col font-sans relative bg-[#0a0f1d]">
+    <div className="min-h-screen w-full overflow-hidden text-slate-100 flex flex-col font-sans relative bg-[#0a0f1d]">
       {/* Background Glow */}
       <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-red-600/10 blur-[120px] pointer-events-none"></div>
 
@@ -155,7 +155,7 @@ const AdminLayout = ({ user, onLogout }) => {
       )}
 
       {/* Body */}
-      <div className="flex flex-1 flex-col lg:flex-row min-w-0">
+      <div className="flex flex-1 flex-col lg:flex-row min-h-0">
         {/* Sidebar */}
         <aside className="hidden lg:flex lg:w-72 border-r border-slate-800/60 bg-[#0c1325]/40 backdrop-blur-sm p-3 flex-col gap-4">
           {adminNavItems.map((item) => {
@@ -183,7 +183,7 @@ const AdminLayout = ({ user, onLogout }) => {
         </aside>
 
         {/* Main Content */}
-        <main className="flex-1 p-4 sm:p-6 overflow-x-hidden">
+        <main className="flex-1 p-4 sm:p-6 overflow-y-auto min-h-0">
           <div className="max-w-7xl mx-auto">
             {renderPage()}
           </div>

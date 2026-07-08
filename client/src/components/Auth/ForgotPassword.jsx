@@ -60,7 +60,7 @@ function ForgotPassword({ onBackToLogin, onOtpVerified, userEmail }) {
       {step === "send-otp" && (
         <div className="grid gap-5">
           {message && (
-            <p className="rounded-md bg-red-500/10 px-3 py-2 text-center text-sm text-red-400">
+            <p className="rounded-md bg-green-500/10 px-3 py-2 text-center text-sm text-green-400">
               {message}
             </p>
           )}
