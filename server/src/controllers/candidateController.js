@@ -290,7 +290,7 @@ const saveProfile = async (req, res) => {
         certifications,
         profileCompleted: true,
       },
-      { new: true }
+      { returnDocument: "after" }
     );
 
     res.status(200).json({

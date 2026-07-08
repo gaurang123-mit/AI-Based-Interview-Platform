@@ -45,8 +45,7 @@ const startInterview = async (req, res) => {
         messages: [{ role: 'user', content: prompt }],
       });
 
-            await AIUsage.findOneAndUpdate(
-      {},
+            await AIUsage.findOneAndUpdate( {},
       {
         $inc: {
           totalRequests: 1,
@@ -56,10 +55,7 @@ const startInterview = async (req, res) => {
       }
     );
 
-          
-
-      
-      let raw       = response.choices[0].message.content.trim();
+      let raw = response.choices[0].message.content.trim();
       raw = raw
   .replace(/```json\s*/gi, "")
   .replace(/```\s*/g, "")
