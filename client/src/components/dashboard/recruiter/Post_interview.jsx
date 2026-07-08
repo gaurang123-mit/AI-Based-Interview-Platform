@@ -106,6 +106,7 @@ const PostInterview = () => {
         {/* ✅ Fixed: name was "Name of the round" (spaces break req.body) */}
         <label className="mb-2 flex items-center text-sm font-medium text-slate-300">
           Round Name :
+          <span className="text-red-500 ml-2">*</span>
         </label>
         <input
           required
@@ -117,6 +118,7 @@ const PostInterview = () => {
         />
         <label className="mb-2 flex items-center text-sm font-medium text-slate-300">
           Job Role :
+          <span className="text-red-500 ml-2">*</span>
         </label>
         <input
           required
@@ -128,6 +130,7 @@ const PostInterview = () => {
         />
         <label className="mb-2 flex items-center text-sm font-medium text-slate-300">
           Job Description :
+          <span className="text-red-500 ml-2">*</span>
         </label>
         <textarea
           required
@@ -139,6 +142,7 @@ const PostInterview = () => {
         />
         <label className="mb-2 flex items-center text-sm font-medium text-slate-300">
           Skills :
+          <span className="text-red-500 ml-2">*</span>
         </label>
         <input
           required
@@ -151,6 +155,7 @@ const PostInterview = () => {
   
         <label className="mb-2 flex items-center text-sm font-medium text-slate-300">
           Candidate Type :
+          <span className="text-red-500 ml-2">*</span>
         </label>
         <select
           name="candidateType"
