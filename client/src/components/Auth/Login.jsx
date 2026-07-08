@@ -43,7 +43,7 @@ function Login({ onForgotPasswordClick }) {
 
     formRef.current?.reset();
     
-    if (!data.passwordChanged) {
+    if (!data.user.passwordChanged) {
       console.log("navigated to set password")
       navigate("/set-password");
     } 

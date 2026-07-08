@@ -256,11 +256,11 @@ const loginUser = async (req, res) => {
                 });
             }
 
+
             generateTokenAndSetCookie(recruiter, res);
             return res.status(200).json({
                 message: "Recruiter logged in successfully",
-                user:formatUserResponse(recruiter),
-
+                user:formatUserResponse(recruiter)
             });
 
         }
