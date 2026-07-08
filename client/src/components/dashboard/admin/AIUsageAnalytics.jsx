@@ -62,6 +62,19 @@ if (!analytics) {
             {analytics.estimatedCost}
           </p>
         </div>
+
+        <div className="bg-slate-900 border border-slate-700 rounded-xl p-6">
+          <h3 className="text-slate-400">Number post sent to candidates</h3>
+          <p className="text-3xl font-bold mt-2">
+            {analytics.totalInterviews}
+          </p>
+        </div>
+
+        <div className="mt-5 flex items-center justify-between">
+
+    </div>      
+    
+
       </div>
 
       {/* Token Breakdown */}
