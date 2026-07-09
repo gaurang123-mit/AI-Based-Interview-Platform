@@ -7,6 +7,7 @@ import {
   BarChart3,
   Users,
   Building2,
+  ClipboardList
 } from "lucide-react";
 
 import { useState } from "react";
@@ -14,7 +15,7 @@ import { useState } from "react";
 import AdminDashboard from "../components/dashboard/admin/AIUsageAnalytics";
 import CandidatesTable from "../components/dashboard/admin/CandidatesTable";
 import RecruitersTable from "../components/dashboard/admin/RecruitersTable";
-
+import Results from "../components/dashboard/admin/Results";
 const AdminLayout = ({ user, onLogout }) => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -32,6 +33,10 @@ const AdminLayout = ({ user, onLogout }) => {
       name: "Recruiters",
       icon: Building2,
     },
+      {
+    name: "Results",
+    icon: ClipboardList,
+  },
   ];
 
   const renderPage = () => {
@@ -44,6 +49,9 @@ const AdminLayout = ({ user, onLogout }) => {
 
       case "Recruiters":
         return <RecruitersTable />;
+
+      case "Results":
+        return <Results />;
 
       default:
         return (

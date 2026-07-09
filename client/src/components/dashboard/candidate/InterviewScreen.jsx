@@ -63,37 +63,37 @@ export default function InterviewScreen({ interviewId }) {
     [cleanupSession, navigate]
   );
 
-useTabSwitchGuard({
-  enabled: true,
-  maxViolations: 3,
+  useTabSwitchGuard({
+    enabled: true,
+    maxViolations: 3,
 
-  onWarning: ({ count, remaining }) => {
-    toast.error(
-      `Warning : Please do not switch tabs, the session is monitored.`
-    );
-  },
-
-  onViolation: async () => {
-    try {
-      await api.post("/interview/interview-violation", {
-        isviolated: true,
-      });
-
+    onWarning: ({ count, remaining }) => {
       toast.error(
-        "Interview terminated because you switched tabs multiple times."
+        `Warning : Please do not switch tabs, the session is monitored.`
       );
+    },
 
-      // Navigate away
-      navigate("/");
-    setTimeout(() => {
-      window.location.reload()
-    }, 2000);
+    onViolation: async () => {
+      try {
+        await api.post("/interview/interview-violation", {
+          isviolated: true,
+        });
 
-    } catch (err) {
-      console.error(err);
-    }
-  },
-});
+        toast.error(
+          "Interview terminated because you switched tabs multiple times."
+        );
+
+        // Navigate away
+        navigate("/");
+        setTimeout(() => {
+          window.location.reload()
+        }, 2000);
+
+      } catch (err) {
+        console.error(err);
+      }
+    },
+  });
 
   const fetchQuestion = useCallback(async () => {
     setLoading(true);
@@ -262,16 +262,14 @@ useTabSwitchGuard({
           </span>
         </div>
         <div
-          className={`flex items-center gap-2 rounded-full px-3 py-1 text-xs font-medium ${
-            isLowTime
+          className={`flex items-center gap-2 rounded-full px-3 py-1 text-xs font-medium ${isLowTime
               ? "bg-red-950 text-red-200"
               : "bg-amber-950 text-amber-200"
-          }`}
+            }`}
         >
           <span
-            className={`h-2 w-2 rounded-full ${
-              isLowTime ? "bg-red-400" : "bg-amber-400"
-            }`}
+            className={`h-2 w-2 rounded-full ${isLowTime ? "bg-red-400" : "bg-amber-400"
+              }`}
           />
           {formatTime(timeLeft)} remaining
         </div>
@@ -326,8 +324,8 @@ useTabSwitchGuard({
                 {submitting
                   ? "Saving..."
                   : isLastQuestion
-                  ? "Submit interview"
-                  : "Next question"}
+                    ? "Submit interview"
+                    : "Next question"}
               </button>
             </div>
           </section>
@@ -366,32 +364,27 @@ useTabSwitchGuard({
                   stepIndex < questionIndex
                     ? "done"
                     : stepIndex === questionIndex
-                    ? "active"
-                    : "pending";
+                      ? "active"
+                      : "pending";
 
                 return (
                   <div key={step} className="flex items-center gap-3">
                     <div
-                      className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-medium ${
-                        status === "done"
+                      className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-medium ${status === "done"
                           ? "bg-emerald-950 text-emerald-300"
                           : ""
-                      } ${
-                        status === "active" ? "bg-white text-slate-900" : ""
-                      } ${
-                        status === "pending"
+                        } ${status === "active" ? "bg-white text-slate-900" : ""
+                        } ${status === "pending"
                           ? "bg-slate-800 text-slate-500"
                           : ""
-                      }`}
+                        }`}
                     >
                       {status === "done" ? "OK" : stepIndex}
                     </div>
                     <span
-                      className={`text-sm ${
-                        status === "done" ? "text-slate-500 line-through" : ""
-                      } ${status === "active" ? "font-medium text-white" : ""} ${
-                        status === "pending" ? "text-slate-600" : ""
-                      }`}
+                      className={`text-sm ${status === "done" ? "text-slate-500 line-through" : ""
+                        } ${status === "active" ? "font-medium text-white" : ""} ${status === "pending" ? "text-slate-600" : ""
+                        }`}
                     >
                       {step}
                     </span>
@@ -415,7 +408,12 @@ useTabSwitchGuard({
             </p>
             <button
               type="button"
-              onClick={() => navigate("/dashboard", { replace: true })}
+              onClick={() => {
+                navigate("/dashboard", { replace: true })
+                setTimeout(() => {
+                  window.location.reload()
+                }, 2000);
+              }}
               className="rounded-md bg-emerald-600 px-6 py-3 font-semibold text-white hover:bg-emerald-500"
             >
               Go to dashboard

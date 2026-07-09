@@ -272,7 +272,6 @@ Evaluate and return ONLY a valid JSON object, no markdown, no explanation:
         messages: [{ role: 'user', content: prompt }],
       });
 
-      console.log("Answer Evaluation:", response.usage);
 
       await AIUsage.updateOne(
   {},
@@ -341,12 +340,14 @@ Return ONLY a valid JSON object, no markdown, no explanation:
   }
 );
  
-    
+    const recruiter = await Admin.findById(interview.recruiterId).select("name")
        
     const result = await Result.create({
       interviewId:  interview._id,
+      recruiter: recruiter.name,
+      recruiterId: Interview.recruiterId,
       candidateId:  interview.candidateId,
-      overallScore,
+      overallScore: overallScore,
       summary: {
         totalQuestions: interview.questions.length,
         averageScore:   overallScore,

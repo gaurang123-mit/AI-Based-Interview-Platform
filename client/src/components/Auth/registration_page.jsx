@@ -215,7 +215,6 @@ function RegistrationPage() {
                 type={showPassword ? "text" : "password"}
                 name="password"
                 placeholder="Create password"
-                autoComplete="new-password"
                 className="min-w-0 flex-1 bg-transparent text-white outline-none placeholder:text-slate-500"
                 required
               />

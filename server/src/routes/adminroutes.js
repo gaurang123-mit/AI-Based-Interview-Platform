@@ -7,6 +7,7 @@ const {
   addRecruiter,
   deleteCandidate,
   deleteRecruiter,
+  Deleteresults,
   getAIAnalytics
 } = require("../controllers/adminController");
 
@@ -44,6 +45,8 @@ router.delete(
   roleMiddleware("admin"),
   deleteRecruiter
 );
+
+router.delete("/delete-result/:resultID", authMiddleware, roleMiddleware("admin"),Deleteresults);
 
 router.get("/ai-analytics",authMiddleware,roleMiddleware("admin"), getAIAnalytics);
 

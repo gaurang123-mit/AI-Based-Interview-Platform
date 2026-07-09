@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import api from "../../../api/axiosClient";
 
-export default function PerformancePage() {
+export default function Results() {
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedCandidate, setSelectedCandidate] = useState(null);
@@ -32,18 +32,18 @@ export default function PerformancePage() {
         )
       : 0;
 
-  // const handleDeleteResult = async(resultID)=>{
-  //     try{
-  //         const res = await api.delete(`/recruiter/delete-result/${resultID}`)
-  //         if (res.status == 200){
-  //            setResults(prev =>
-  //   prev.filter(result => result._id !== resultID)
-  // );
-  //         }
-  //       }catch(err){
-  //       console.log("error:",err)
-  //     }
-  // }
+  const handleDeleteResult = async(resultID)=>{
+      try{
+          const res = await api.delete(`/admin/delete-result/${resultID}`)
+          if (res.status == 200){
+             setResults(prev =>
+    prev.filter(result => result._id !== resultID)
+  );
+          }
+        }catch(err){
+        console.log("error:",err)
+      }
+  }
 
   const hireCount = results.filter(
     (r) =>
@@ -128,6 +128,7 @@ export default function PerformancePage() {
 
               <tr>
                 <th className="text-left p-4">Candidate</th>
+                <th className="text-left p-4">Recruiter</th>
                 <th className="text-left p-4">Role</th>
                 <th className="text-left p-4">Score</th>
                 <th className="text-left p-4">Recommendation</th>
@@ -136,64 +137,74 @@ export default function PerformancePage() {
 
             </thead>
 
-            <tbody>
+<tbody>
+  {results.map((item) => (
+    <tr
+      key={item._id}
+      className="border-t border-slate-700 hover:bg-slate-700/20"
+    >
+      {/* Candidate */}
+      <td className="p-4">
+        <div>
+          <p className="font-semibold text-white">
+            {item.candidateId?.name}
+          </p>
 
-              {results.map((item) => (
-                <tr
-                  key={item._id}
-                  className="border-t border-slate-700"
-                >
-                  <td className="p-4">
-                    <div>
-                      <p className="font-semibold text-white">
-                        {item.candidateId?.name}
-                      </p>
+          <p className="text-sm text-slate-400">
+            {item.candidateId?.email}
+          </p>
+        </div>
+      </td>
 
-                      <p className="text-sm text-slate-400">
-                        {item.candidateId?.email}
-                      </p>
-                    </div>
-                  </td>
+      {/* Recruiter */}
+      <td className="p-4">
+        {item.recruiter}
+      </td>
 
-                  <td className="p-4">
-                    {item.interviewId?.jobRole}
-                  </td>
+      {/* Role */}
+      <td className="p-4">
+        {item.interviewId?.jobRole}
+      </td>
 
-                  <td className="p-4">
-                    {item.overallScore}
-                  </td>
+      {/* Score */}
+      <td className="p-4 font-semibold">
+        {item.overallScore}
+      </td>
 
-                  <td className="p-4">
+      {/* Recommendation */}
+      <td className="p-4">
+        <span
+          className={`px-3 py-1 rounded-full text-xs font-medium ${
+            item.summary?.recommendation?.toLowerCase() === "hire"
+              ? "bg-emerald-900 text-emerald-300"
+              : "bg-red-900 text-red-300"
+          }`}
+        >
+          {item.summary?.recommendation}
+        </span>
+      </td>
 
-                    <span
-                      className={`px-3 py-1 rounded-full text-xs font-medium ${
-                        item.summary?.recommendation ===
-                        "hire"
-                          ? "bg-emerald-900 text-emerald-300"
-                          : "bg-red-900 text-red-300"
-                      }`}
-                    >
-                      {item.summary?.recommendation}
-                    </span>
+      {/* Action */}
+      <td className="p-4">
+        <div className="flex gap-2">
+          <button
+            onClick={() => setSelectedCandidate(item)}
+            className="bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-lg"
+          >
+            View
+          </button>
 
-                  </td>
-
-                  <td className="p-4">
-
-                    <button
-                      onClick={() =>
-                        setSelectedCandidate(item)
-                      }
-                      className="bg-indigo-600 px-3 py-2 rounded-lg"
-                    >
-                      View
-                    </button>
-
-                  </td>
-                </tr>
-              ))}
-
-            </tbody>
+          <button
+            onClick={() => handleDeleteResult(item._id)}
+            className="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg"
+          >
+            Delete
+          </button>
+        </div>
+      </td>
+    </tr>
+  ))}
+</tbody>
 
           </table>
 

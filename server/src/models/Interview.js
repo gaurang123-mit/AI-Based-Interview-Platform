@@ -6,7 +6,7 @@ const interviewSchema = new mongoose.Schema({
   candidateId:  { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   jobRole:      { type: String, required: true },
   jobDescription: { type: String, default: null },
-  skills:       [{ type: String }],               // e.g. ['React', 'Node.js']
+  skills:       [{ type: String }],   
   difficulty:   { type: String, enum: ['easy', 'medium', 'hard'], default: 'medium' },
 postId: {
   type: mongoose.Schema.Types.ObjectId,
@@ -15,7 +15,7 @@ postId: {
 
 recruiterId: {
   type: mongoose.Schema.Types.ObjectId,
-  ref: "User"
+  ref: "Admin"
 },
   status: {
     type: String,

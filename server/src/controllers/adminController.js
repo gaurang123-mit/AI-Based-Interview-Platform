@@ -2,6 +2,8 @@ const AIUsage = require("../models/AIUsage");
 const User = require("../models/User");
 const Admin = require("../models/Admin")
 const Resume = require("../models/Resume")
+const Result = require("../models/Result")
+const Interview = require("../models/Interview")
 const InterviewPost = require("../models/interviewpost")
 const bcrypt = require("bcryptjs")
 const cloudinary = require("../config/cloudinary")
@@ -158,6 +160,77 @@ const deleteCandidate = async (req, res) => {
 };
 
 
+
+function getPublicIdVideo(videoUrl) {
+  const parts = videoUrl.split("/upload/")[1];
+
+  // Remove version number
+  const withoutVersion = parts.replace(/^v\d+\//, "");
+
+  // Remove extension
+  return withoutVersion.replace(/\.[^/.]+$/, "");
+}
+
+
+
+const Deleteresults = async (req, res) => {
+  try {
+    const result = await Result.findById(req.params.resultID)
+      .select("interviewId questions")
+      .lean();
+
+    if (!result) {
+      return res.status(404).json({
+        message: "Result not found",
+      });
+    }
+
+   const interview = await Interview.findByIdAndDelete(result.interviewId)
+    if (!interview) {
+      return res.status(404).json({
+        message: "Interview not found",
+      });
+    }
+    
+    if (!req.user.id) {
+      return res.status(403).json({
+        message: "Unauthorized access is denied",
+      });
+    }
+    
+    // Delete all Cloudinary videos in parallel
+    await Promise.all(
+      result.questions
+      .filter((q) => q.recordingUrl)
+      .map(async (q) => {
+        try {
+          const publicId = getPublicIdVideo(q.recordingUrl);
+          
+          await cloudinary.uploader.destroy(publicId, {
+            resource_type: "video",
+          });
+        } catch (err) {
+          console.error(`Failed to delete ${q.recordingUrl}`, err);
+        }
+      })
+    );
+    
+    await Result.findByIdAndDelete(req.params.resultID);
+    await Interview.findByIdAndDelete(result.interviewId)
+
+    return res.status(200).json({
+      message: "Result deleted successfully",
+    });
+  } catch (err) {
+    console.error(err);
+
+    return res.status(500).json({
+      message: "Server error",
+    });
+  }
+};
+
+
 const getAIAnalytics = async (req, res) => {
   try {
     let analytics = await AIUsage.findOne({});
@@ -212,4 +285,5 @@ module.exports = {
   addRecruiter,
   deleteCandidate,
   deleteRecruiter,
+  Deleteresults
 };
