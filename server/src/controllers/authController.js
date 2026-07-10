@@ -52,7 +52,7 @@ const formatUserResponse = (user) => {
 const getMe = async (req, res) => {
     try {
         const { id, role } = req.user;
-     
+
 
         if (role === "admin" && id === "admin") {
             return res.status(200).json({
@@ -70,7 +70,7 @@ const getMe = async (req, res) => {
                 ? await Admin.findById(id)
                 : await User.findById(id);
 
-           
+
         if (!user) {
             return res.status(404).json({
                 message: "User not found"
@@ -94,6 +94,12 @@ const emailVerify = async (req, res) => {
         if (!email) {
             return res.status(400).json({ message: "Email is required" });
         }
+        const emailregex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/
+        if (!emailregex.test(email)) {
+            return res.status(400).json({
+                message: "please enter the valid email address"
+            })
+        }
         const existingUser = await Admin.findOne({ email: email.toLowerCase().trim() });
         const existingCandidate = await User.findOne({ email: email.toLowerCase().trim() });
         if (existingUser || existingCandidate) {
@@ -106,20 +112,12 @@ const emailVerify = async (req, res) => {
         const otp = crypto.randomInt(100000, 1000000).toString();
 
         otpStore.set(normalizedEmail, {
-    otp,
-    expiresAt: Date.now() + 10 * 60 * 1000 
-});
+            otp,
+            expiresAt: Date.now() + 10 * 60 * 1000
+        });
 
-        try {
-            await sendOtp(normalizedEmail, otp);
-        } catch (mailError) {
-            if (mailError.code === "EAUTH" || mailError.responseCode === 535) {
-                return res.status(500).json({
-                    message: "Gmail rejected the email login. Use a Gmail App Password."
-                });
-            }
-            
-        }
+
+        await sendOtp(normalizedEmail, otp);
 
 
         res.status(200).json({
@@ -132,9 +130,9 @@ const emailVerify = async (req, res) => {
 };
 
 const otpVerify = async (req, res) => {
-    try{
-        const { email,otp } = req.body;
-         if (!otp || !email) {
+    try {
+        const { email, otp } = req.body;
+        if (!otp || !email) {
             return res.status(400).json({ message: "otp and email are required" });
         }
 
@@ -144,7 +142,7 @@ const otpVerify = async (req, res) => {
         if (!storedData) {
             return res.status(400).json({ message: "No OTP found for this email" });
         }
-        
+
         if (Date.now() > storedData.expiresAt) {
             otpStore.delete(normalizedEmail);
             return res.status(400).json({ message: "OTP has expired" });
@@ -157,8 +155,8 @@ const otpVerify = async (req, res) => {
         res.status(200).json({ message: "OTP verified successfully" });
 
 
-    }catch(error){
- res.status(500).json({ message: error.message });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
     }
 }
 // registration
@@ -179,9 +177,9 @@ const registerUser = async (req, res) => {
         const recruiter = await Admin.findOne({ email: normalizedEmail })
 
         const candidate = await User.findOne({
-                 email: normalizedEmail 
+            email: normalizedEmail
         })
-        
+
         const existingUser = admin || recruiter || candidate;
 
         if (existingUser) {
@@ -246,9 +244,9 @@ const loginUser = async (req, res) => {
 
         const normalizedEmail = email.toLowerCase().trim();
         const recruiter = await Admin.findOne({ email: normalizedEmail })
-        
+
         if (recruiter) {
-           
+
             const isRecPass = await bcrypt.compare(password, recruiter.password);
             if (!isRecPass) {
                 return res.status(401).json({
@@ -260,7 +258,7 @@ const loginUser = async (req, res) => {
             generateTokenAndSetCookie(recruiter, res);
             return res.status(200).json({
                 message: "Recruiter logged in successfully",
-                user:formatUserResponse(recruiter)
+                user: formatUserResponse(recruiter)
             });
 
         }
@@ -306,7 +304,7 @@ const forgotPassword = async (req, res) => {
 
         const normalizedEmail = email.toLowerCase().trim();
 
-        const recruiter = await Admin.findOne({email: normalizedEmail})
+        const recruiter = await Admin.findOne({ email: normalizedEmail })
 
         const user = await User.findOne({ email: normalizedEmail });
 
@@ -321,18 +319,7 @@ const forgotPassword = async (req, res) => {
         cur_user.resetPasswordOtpExpire = Date.now() + 10 * 60 * 1000;
         await cur_user.save();
 
-
-        try {
             await sendOtp(cur_user.email, otp);
-        } catch (mailError) {
-            if (mailError.code === "EAUTH" || mailError.responseCode === 535) {
-                return res.status(500).json({
-                    message: "Gmail rejected the email login. Use a Gmail App Password."
-                });
-            }
-            throw mailError;
-        }
-
 
         res.status(200).json({
             message: "OTP sent to your registered email"
@@ -355,7 +342,7 @@ const verifyOtp = async (req, res) => {
 
         const normalizedEmail = email.toLowerCase().trim();
         const recruiter = await Admin.findOne({
-               email: normalizedEmail,
+            email: normalizedEmail,
             resetPasswordOtp: otp,
             resetPasswordOtpExpire: {
                 $gt: Date.now()
