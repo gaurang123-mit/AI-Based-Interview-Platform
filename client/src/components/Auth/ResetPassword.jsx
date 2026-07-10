@@ -1,8 +1,9 @@
-import { useRef, useState } from "react";
+import { useRef, useState,useEffect} from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { KeyRound , Eye, EyeOff} from "lucide-react";
 import toast from "react-hot-toast";
 import api, { getErrorMessage } from "../../api/axiosClient";
+import { motion } from "framer-motion";
 
 function ResetPassword({ email, otp, onBackToLogin }) {
   const navigate = useNavigate();
@@ -10,8 +11,9 @@ function ResetPassword({ email, otp, onBackToLogin }) {
   const passwordRef = useRef(null);
   const confirmPasswordRef = useRef(null);
   const [loading, setLoading] = useState(false);
-    const [showPassword, setShowPassword] = useState(false);
-    const [confirmshowPassword, setShowconfirmPassword] = useState(false);
+   const [message, setMessage] = useState("");
+  const [confirmshowPassword, setShowconfirmPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   if (!email || !otp) {
     return <Navigate to="/forgot-password" replace />;
@@ -22,6 +24,15 @@ function ResetPassword({ email, otp, onBackToLogin }) {
 
     return passwordRegex.test(password);
   };
+  useEffect(() => {
+  if (!message) return;
+
+  const timer = setTimeout(() => {
+    setMessage("");
+  }, 2000);
+
+  return () => clearTimeout(timer);
+}, [message]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -30,14 +41,12 @@ function ResetPassword({ email, otp, onBackToLogin }) {
     const confirmPassword = confirmPasswordRef.current?.value || "";
 
     if (!validatePassword(password)){
-      toast.error(
-        "Password must be at least 8 characters long and contain one uppercase letter, one lowercase letter, one number, and one special character."
-      );
+     setMessage( "Password doesn't meet the required criteria.");
       return;
     }
     
     if (password !== confirmPassword){
-      toast.error("Passwords do not match.");
+     setMessage("Passwords do not match.");
     }
     setLoading(true);
 
@@ -95,12 +104,12 @@ function ResetPassword({ email, otp, onBackToLogin }) {
               />
 
                 <button
-                         type="button"
-                         onClick={() => setShowPassword((prev) => !prev)}
-                         className="text-slate-400 transition-colors hover:text-white"
+                    type="button"
+                    onClick={() => setShowPassword((prev) => !prev)}
+                    className="text-slate-400 transition-colors hover:text-white"
                        >
                          {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                       </button>
+                </button>
             </div>
           </label>
 
@@ -118,26 +127,44 @@ function ResetPassword({ email, otp, onBackToLogin }) {
               />
 
                <button
-                         type="button"
-                         onClick={() => setShowconfirmPassword((prev) => !prev)}
-                         className="text-slate-400 transition-colors hover:text-white"
-                       >
+                  type="button"
+                  onClick={() => setShowconfirmPassword((prev) => !prev)}
+                  className="text-slate-400 transition-colors hover:text-white"
+                  >
                          {confirmshowPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                        </button>
             </div>
           </label>
 
-<p className="text-xs text-slate-400">
-  Password must contain:
-</p>
+            <p className="text-xs text-slate-400">
+              Password must contain:
+            </p>
 
-<ul className="ml-5 list-disc text-xs text-slate-400">
-  <li>Minimum 8 characters</li>
-  <li>One uppercase letter</li>
-  <li>One lowercase letter</li>
-  <li>One number</li>
-  <li>One special character (@$!%*?&)</li>
-</ul>
+            <ul className="ml-5 list-disc text-xs text-slate-400">
+              <li>Minimum 8 characters</li>
+              <li>One uppercase letter</li>
+              <li>One lowercase letter</li>
+              <li>One number</li>
+              <li>One special character (@$!%*?&)</li>
+            </ul>
+            {message && (
+      
+        <motion.p 
+         key={message}
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{
+            opacity: [0, 1, 1, 0],
+            scale: [0.8, 1, 1, 0.8],
+          }}
+          transition={{
+            duration: 2,
+            times: [0, 0.15, 0.85, 1],
+          }}
+          onAnimationComplete={() => setMessage("")}
+          className="rounded-md px-3 py-2 text-center text-sm text-red-400">  
+                              {message}
+        </motion.p>
+          )}
 
           <button
             type="submit"

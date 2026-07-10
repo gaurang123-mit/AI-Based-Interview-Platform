@@ -217,9 +217,7 @@ function RegistrationPage() {
                 placeholder="Create password"
                 className="min-w-0 flex-1 bg-transparent text-white outline-none placeholder:text-slate-500"
                 required
-              />
-
-              
+              /> 
 
               <button
                 type="button"

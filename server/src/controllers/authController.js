@@ -94,6 +94,7 @@ const emailVerify = async (req, res) => {
         if (!email) {
             return res.status(400).json({ message: "Email is required" });
         }
+
         const existingUser = await Admin.findOne({ email: email.toLowerCase().trim() });
         const existingCandidate = await User.findOne({ email: email.toLowerCase().trim() });
         if (existingUser || existingCandidate) {
@@ -125,6 +126,7 @@ const emailVerify = async (req, res) => {
         res.status(200).json({
             message: "OTP sent to your registered email"
         });
+        
 
     } catch (error) {
         res.status(500).json({ message: error.message });
