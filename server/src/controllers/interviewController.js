@@ -97,7 +97,11 @@ const startInterview = async (req, res) => {
 // ── Get Next Question (just fetch from DB, no AI call) ─────────
 const getNextQuestion = async (req, res) => {
   try {
-    const interview = await Interview.findById(req.params.id);
+    let interview = null;
+    if(!interview){
+
+      interview = await Interview.findById(req.params.id);
+    }
     if (!interview) return res.status(404).json({ message: 'Interview not found' });
 
     // find the next unanswered question
