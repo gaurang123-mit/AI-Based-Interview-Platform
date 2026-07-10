@@ -123,6 +123,7 @@ const emailVerify = async (req, res) => {
         res.status(200).json({
             message: "OTP sent to your registered email"
         });
+        
 
     } catch (error) {
         res.status(500).json({ message: error.message });

@@ -74,6 +74,11 @@ body {
   margin: 0;
 }
 
+input::-ms-reveal,
+input::-ms-clear {
+  display: none;
+}
+
 #root {
   width: 100%;
   max-width: 100%;
