@@ -5,6 +5,8 @@ import api from "../../../api/axiosClient";
 import { useAuthContext } from "../../../context/AuthContext";
 import { useRef } from "react";
 import { KeyRound , Eye, EyeOff} from "lucide-react";
+import { useEffect } from "react";
+import { motion } from "framer-motion";
 
 function SetPassword() {
   const navigate = useNavigate();
@@ -14,16 +16,27 @@ function SetPassword() {
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [confirmshowPassword, setShowconfirmPassword] = useState(false);
+
 
 const validatePassword = (password) => {
   const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
   return passwordRegex.test(password);
 }
+useEffect(() => {
+  if (!message) return;
 
-  const handleSubmit = async (e) => {
-  e.preventDefault();
-  setMessage("");
+  const timer = setTimeout(() => {
+    setMessage("");
+  }, 2000);
+
+  return () => clearTimeout(timer);
+}, [message]);
+
+const handleSubmit = async (e) => {
+      e.preventDefault();
+      setMessage("");
 
   const newPassword = newPasswordRef.current?.value || "";
   const confirmPassword = confirmPasswordRef.current?.value || "";
@@ -31,7 +44,7 @@ const validatePassword = (password) => {
 
     if (!validatePassword(newPassword)) {
       setMessage(
-        "Password must be at least 8 characters long and contain one uppercase letter, one lowercase letter, one number, and one special character."
+        "Password doesn't meet the required criteria."
       );
       return;
     }
@@ -89,34 +102,65 @@ const validatePassword = (password) => {
         <div className="flex min-h-12 items-center rounded-lg border border-slate-500/30 bg-slate-950/50 px-3 text-slate-400 focus-within:border-teal-300 focus-within:ring-4 focus-within:ring-teal-500/10">
           <input
             ref={newPasswordRef}
-            type="password"
+            type={showPassword ? "text" : "password"}
             placeholder="Enter New Password"
             className="w-full bg-transparent text-white outline-none placeholder:text-slate-500"
             required
           />
+          <button
+                type="button"
+                onClick={() => setShowPassword((prev) => !prev)}
+                className="text-slate-400 transition-colors hover:text-white"
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
         </div>
 
         <div className="flex min-h-12 items-center rounded-lg border border-slate-500/30 bg-slate-950/50 px-3 text-slate-400 focus-within:border-teal-300 focus-within:ring-4 focus-within:ring-teal-500/10">
           <input
             ref={confirmPasswordRef}
-            type="password"
+            type={showConfirmPassword ? "text" : "password"}
             placeholder="Confirm New Password"
             className="w-full bg-transparent text-white outline-none placeholder:text-slate-500"
             required
           />
+          <button
+                type="button"
+                onClick={() => setShowConfirmPassword((prev) => !prev)}
+                className="text-slate-400 transition-colors hover:text-white"
+              >
+                {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
         </div>
+            <p className="text-xs text-slate-400">
+              Password must contain:
+            </p>
 
+            <ul className="ml-5 list-disc text-xs text-slate-400">
+              <li>Minimum 8 characters</li>
+              <li>One uppercase letter</li>
+              <li>One lowercase letter</li>
+              <li>One number</li>
+              <li>One special character (@$!%*?&)</li>
+            </ul>
           {message && (
-      <>
-        <p className="rounded-md bg-red-500/10 px-3 py-2 text-center text-sm text-red-400">
-          {message}
-        </p>
-
-        <p className="text-xs text-slate-400">
-          
-        </p>
-      </>
-    )}
+      
+        <motion.p 
+         key={message}
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{
+            opacity: [0, 1, 1, 0],
+            scale: [0.8, 1, 1, 0.8],
+          }}
+          transition={{
+            duration: 2,
+            times: [0, 0.15, 0.85, 1],
+          }}
+          onAnimationComplete={() => setMessage("")}
+          className="rounded-md px-3 py-2 text-center text-sm text-red-400">  
+                              {message}
+        </motion.p>
+          )}
 
         <button
           type="submit"
